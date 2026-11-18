@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>攻势 · 对数学公式发起攻势</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <section id="home" class="screen">
+    <div class="brand">攻<span>势</span></div>
+    <div class="sub">对数学公式发起攻势</div>
+    <div class="exam-row" id="examRow"></div>
+    <div class="stats">
+      <div><b id="stNew">0</b><span>待学</span></div>
+      <div><b id="stDue">0</b><span>待复习</span></div>
+      <div><b id="stDone">0</b><span>已掌握</span></div>
+    </div>
+    <button id="startBtn" class="primary">开始今天的学习</button>
+    <div class="row2">
+      <button id="reviewBtn" class="secondary">复习挑战<small>只做题</small></button>
+      <button id="sumBtn" class="secondary">公式总结<small>会了 / 模糊 / 不会</small></button>
+    </div>
+    <div class="hint" id="homeHint"></div>
+    <div class="credit">我是 mxr　这是基于 dsh 的考研数学公式记忆网站 qwq<br>感谢 wjm 的 idea！<br>祝折桂探杏，金榜题名</div>
+  </section>
+
+  <section id="study" class="screen hidden">
+    <div class="topbar">
+      <button id="quitBtn" class="ghost">退出</button>
+      <div class="bar"><i id="barFill"></i></div>
+      <div class="counter" id="counter">0/0</div>
+    </div>
+    <div id="card"></div>
+  </section>
+
+  <section id="summary" class="screen hidden">
+    <div class="topbar">
+      <button id="sumBack" class="ghost">返回</button>
+      <div class="counter">总结</div>
+    </div>
+    <h1 class="qname">公式总结</h1>
+    <div class="ask" id="sumAsk"></div>
+    <div class="segs" id="sumSegs"></div>
+    <div id="sumList"></div>
+  </section>
+
+  <section id="done" class="screen hidden">
+    <div id="doneBody"></div>
+    <button id="againBtn" class="primary">回到首页</button>
+  </section>
+
+</div>
+
+<script src="render.js"></script>
+<script src="formulas.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

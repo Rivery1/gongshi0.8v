@@ -4,7 +4,222 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>攻势 · 对数学公式发起攻势</title>
-<link rel="stylesheet" href="style.css">
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: linear-gradient(180deg, #EFE8FF 0%, #F7F4FF 320px, #F4F0FF 100%);
+    color: #1B1533;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  #app { max-width: 480px; margin: 0 auto; min-height: 100vh; background: #fff; padding-bottom: 40px;
+         box-shadow: 0 0 60px rgba(108, 77, 255, .10); }
+  .screen { padding: 28px 20px; }
+  #home { display: flex; flex-direction: column; min-height: 100vh; box-sizing: border-box; }
+  .hidden { display: none !important; }
+
+  h1 { font-size: 26px; margin: 0; }
+  .tagline { font-size: 12px; letter-spacing: .04em; color: #7A7396; margin-bottom: 10px; }
+  .ask { color: #7A7396; font-size: 14px; margin: 14px 0 18px; }
+  .qname { font-size: 25px; line-height: 1.4; margin: 6px 0 4px; }
+
+  button { font-family: inherit; font-size: 16px; border: 0; cursor: pointer; }
+  .primary {
+    display: block; width: 100%; padding: 15px; border-radius: 14px; margin-top: 18px;
+    background: linear-gradient(135deg, #8B6BFF 0%, #6C4DFF 55%, #5B3BE8 100%);
+    color: #fff; font-weight: 600; font-size: 17px; letter-spacing: .02em;
+    box-shadow: 0 8px 22px rgba(108, 77, 255, .34);
+  }
+  .primary:active { transform: translateY(1px); }
+  .primary[disabled] { background: #DAD2F3; box-shadow: none; }
+  .ghost { background: transparent; color: #7A7396; font-size: 14px; padding: 6px 4px; }
+
+  /* ---------- 首页 ---------- */
+  .brand { font-size: 30px; font-weight: 800; letter-spacing: .02em; }
+  .brand span { color: #6C4DFF; }
+  .sub { color: #7A7396; font-size: 14px; margin: 6px 0 22px; }
+  .exam-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+  .chip {
+    flex: 1 1 0; min-width: calc(25% - 8px); padding: 9px 0; border-radius: 12px; background: #fff;
+    color: #6b7089; font-size: 14px; font-weight: 600; border: 1.5px solid transparent;
+  }
+  .chip { border: 1.5px solid #EDE6FC; }
+  .chip.on { background: #EFE9FF; color: #6C4DFF; border-color: #6C4DFF; box-shadow: 0 4px 12px rgba(108,77,255,.18); }
+  .stats { display: flex; gap: 10px; }
+  .stats > div {
+    flex: 1; background: #fff; border: 1.5px solid #EDE6FC; border-radius: 16px;
+    padding: 14px 10px; text-align: center;
+  }
+  .stats b { display: block; font-size: 24px; color: #1B1533; }
+  .stats span { font-size: 12px; color: #7A7396; }
+  .hint { text-align: center; color: #A79CC9; font-size: 12px; margin-top: 18px; }
+
+  /* ---------- 学习页 ---------- */
+  .topbar { display: flex; align-items: center; gap: 10px; padding: 4px 0 18px; }
+  .bar { flex: 1; height: 6px; background: #EDE6FC; border-radius: 6px; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; background: #6C4DFF; transition: width .25s; }
+  .counter { font-size: 12px; color: #7A7396; min-width: 40px; text-align: right; }
+
+  /* ---------- 公式 ---------- */
+  .formula {
+    font-family: Georgia, "Times New Roman", "Songti SC", serif;
+    font-size: 22px; line-height: 2.1; text-align: center;
+    padding: 20px 10px; overflow-x: auto; margin: 6px 0 4px;
+    background: #F7F4FF; border-radius: 16px; word-break: break-word;
+  }
+  .formula i { font-style: italic; }
+  .formula sup, .formula sub { font-size: 68%; }
+  .cond { display: block; font-size: 13px; color: #7A7396; margin-top: 6px; font-family: inherit; }
+  .frac { display: inline-block; vertical-align: middle; text-align: center; margin: 0 .18em; }
+  .frac .num { display: block; border-bottom: 1.2px solid currentColor; padding: 0 .22em; line-height: 1.5; }
+  .frac .den { display: block; padding: 0 .22em; line-height: 1.5; }
+  .sqrt .rad { border-top: 1.2px solid currentColor; padding: 0 .12em; margin-left: .04em; }
+  .bigop { display: inline-block; vertical-align: middle; text-align: center; line-height: 1; margin: 0 .12em; }
+  .bigop .lmup, .bigop .lmdn { display: block; font-size: 55%; line-height: 1.15; }
+  .bigop .lmsym { display: block; font-size: 145%; line-height: 1; }
+  .intop { display: inline-block; vertical-align: middle; }
+  .intlim { display: inline-block; vertical-align: -.5em; font-size: 55%; line-height: 1.1; text-align: left; }
+  .intlim .lmup, .intlim .lmdn { display: block; }
+  .limop { display: inline-block; vertical-align: middle; text-align: center; line-height: 1.1; margin: 0 .1em; }
+  .limop .lmsub { display: block; font-size: 55%; }
+  .fn { font-style: normal; }
+  .imath { display: inline-block; vertical-align: -0.18em; margin: 0 .06em; }
+  .unknown { color: #E23C6E; text-decoration: underline wavy; }
+  .rm { font-style: normal; }
+  .thin { display: inline-block; width: .18em; }
+  .sp { display: inline-block; width: .55em; }
+  .xarr { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.05; margin: 0 .12em; }
+  .xlab { font-size: .58em; }
+  .sp2 { width: 1.1em; }
+  .ovl { border-top: 1.2px solid currentColor; padding-top: .06em; }
+  .unl { border-bottom: 1.2px solid currentColor; padding-bottom: .06em; }
+  .hat, .tld, .vec, .dot { position: relative; display: inline-block; padding-top: .12em; }
+  .hat::before { content: "ˆ"; position: absolute; top: -.18em; left: 50%; transform: translateX(-50%); font-size: .9em; }
+  .tld::before { content: "˜"; position: absolute; top: -.14em; left: 50%; transform: translateX(-50%); }
+  .vec::before { content: "→"; position: absolute; top: -.3em; left: 50%; transform: translateX(-50%); font-size: .62em; }
+  .dot::before { content: "·"; position: absolute; top: -.26em; left: 50%; transform: translateX(-50%); }
+  .binom { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center;
+    font-size: .82em; line-height: 1.15; padding: 0 .42em; position: relative; margin: 0 .1em; }
+  .binom::before, .binom::after { position: absolute; top: 50%; transform: translateY(-50%);
+    font-size: 2.1em; line-height: 1; font-weight: 200; }
+  .binom::before { content: "("; left: -.14em; }
+  .binom::after { content: ")"; right: -.14em; }
+  .cases { display: inline-flex; align-items: center; vertical-align: middle; text-align: left; }
+  .cases::before { content: "{"; font-size: 2.3em; line-height: 1; font-weight: 250;
+    transform: scaleX(.72); margin-right: .34em; }
+  .cases-body { display: flex; flex-direction: column; gap: .1em; }
+  .case-row { display: flex; align-items: baseline; gap: .5em; white-space: nowrap; }
+  .case-c { font-size: .8em; color: #5a5f78; }
+
+  .notes { background: #fafaff; border: 1px solid #EFE9FF; border-radius: 14px; padding: 12px 16px; margin-top: 14px; }
+  .notes p { margin: 6px 0; font-size: 14px; color: #4a4f66; line-height: 1.65; }
+  .notes b { color: #6C4DFF; font-weight: 600; margin-right: 8px; font-size: 13px; }
+
+  .grade { display: flex; gap: 10px; margin-top: 18px; }
+  .grade .g { flex: 1; padding: 14px 0; border-radius: 13px; font-weight: 600; font-size: 15px; }
+  .g0 { background: #FFE8F1; color: #E23C6E; }
+  .g1 { background: #FFF4DF; color: #B4780A; }
+  .g2 { background: #E5F8EE; color: #149A5C; }
+
+  /* ---------- 拼公式 / 找错 ---------- */
+  .formula.chips { display: flex; font-size: 17.5px; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px; }
+  .chunk {
+    display: inline-block; padding: 8px 10px; margin: 3px; max-width: 100%; border-radius: 10px;
+    background: #fff; border: 1.5px solid #EBE4FB; cursor: pointer; font-size: 18px;
+  }
+  .chunk.right { border-color: #149A5C; background: #E5F8EE; }
+  /* \quad 这类纯排版块在"找错"里画成一条细分隔线，不可点 */
+  .fspace { display: inline-block; width: 1px; height: 26px; margin: 0 9px;
+    background: #DCD3F5; vertical-align: middle; }
+  .chunk.wrong { border-color: #E23C6E; background: #FFE8F1; }
+
+  .slot {
+    min-height: 74px; border: 1.5px dashed #c9cde4; border-radius: 14px;
+    padding: 10px 12px; margin: 6px 0 14px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+    font-family: Georgia, "Times New Roman", "Songti SC", serif; font-size: 21px;
+  }
+  .slot.empty { color: #b3b7cc; font-size: 14px; font-family: inherit; }
+  .bank { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .tok {
+    max-width: 100%; padding: 9px 12px; border-radius: 11px; background: #F3EEFF;
+    border: 1.5px solid #EBE4FB; cursor: pointer;
+    font-family: Georgia, "Times New Roman", "Songti SC", serif; font-size: 19px;
+  }
+  .tok.in { background: #EFE9FF; border-color: #b9c0ff; }
+  .tok.in:hover { opacity: .7; }
+
+  .fb { text-align: center; font-weight: 700; font-size: 19px; padding: 14px 0 2px; }
+  .fb.ok { color: #149A5C; }
+  .fb.no { color: #E23C6E; }
+  .correct { margin-top: 8px; }
+  .correct > span { display: block; font-size: 12px; color: #7A7396; text-align: center; }
+
+  /* ---------- 完成页 ---------- */
+  #done { text-align: center; padding-top: 70px; }
+  #done .big { font-size: 64px; font-weight: 800; color: #6C4DFF; line-height: 1; }
+  #done p { color: #4a4f66; margin: 10px 0 0; }
+  #done .sub { color: #7A7396; font-size: 13px; margin-top: 14px; }
+
+  /* ---------- v0.3 新增：紫白主题组件 ---------- */
+  .secondary {
+    display: block; width: 100%; padding: 13px; border-radius: 14px; margin-top: 10px;
+    background: #fff; color: #6C4DFF; font-weight: 600; font-size: 15px;
+    border: 1.5px solid #D9CDFF;
+  }
+  .secondary:active { background: #F7F3FF; }
+  .secondary small { display: block; font-weight: 400; font-size: 12px; color: #A79CC9; margin-top: 2px; }
+
+  .opts { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+  .opt {
+    width: 100%; text-align: center; padding: 11px 12px; border-radius: 14px; background: #fff;
+    border: 1.5px solid #EBE4FB; font-size: 18px; line-height: 1.7; color: #1B1533;
+    font-family: Georgia, "Times New Roman", "Songti SC", serif; overflow-x: auto;
+    transition: border-color .15s, background .15s;
+  }
+  .opt:active { background: #F7F3FF; }
+  .opt.right { border-color: #149A5C; background: #E5F8EE; }
+  .opt.wrong { border-color: #E23C6E; background: #FFE8F1; }
+
+  .qmark { display: inline-block; min-width: 34px; text-align: center; font-weight: 700;
+    font-size: 22px; color: #7C5CFF; }
+  .blank {
+    display: inline-block; min-width: 74px; padding: 2px 14px; margin-left: 6px;
+    border-bottom: 2.5px dashed #B9A6F5; color: #B9A6F5; font-size: 20px;
+  }
+  .hint.flash { color: #6C4DFF; font-weight: 600; }
+
+  /* ---------- 首页双按钮 ---------- */
+  .row2 { display: flex; gap: 10px; }
+  .row2 .secondary { flex: 1; padding: 14px 8px; }
+
+  /* ---------- 总结页 ---------- */
+  .segs { display: flex; gap: 8px; margin: 12px 0 16px; }
+  .seg {
+    flex: 1; border: 1.5px solid #E6DDFB; background: #fff; border-radius: 13px;
+    padding: 10px 6px; font-size: 14px; color: #55496F; font-family: inherit; cursor: pointer;
+    transition: .15s;
+  }
+  .seg b { font-size: 16px; margin-left: 2px; }
+  .seg.on.g2 { border-color: #2f9e5f; color: #1f7a46; background: #eaf7ef; }
+  .seg.on.g1 { border-color: #d99000; color: #a86e00; background: #fff6e5; }
+  .seg.on.g0 { border-color: #e0526a; color: #c23a52; background: #ffeef0; }
+  .sumcard {
+    background: #fff; border: 1.5px solid #EDE6FC; border-radius: 18px;
+    padding: 14px 14px 4px; margin-bottom: 12px;
+  }
+  .sumcard .sumhead { font-size: 12px; color: #7A7396; letter-spacing: .3px; }
+  .sumcard h3 { font-size: 18px; margin: 4px 0 8px; color: #1B1533; }
+  .sumcard .formula { font-size: 19px; padding: 12px 0 6px; }
+  .sumcard .notes { font-size: 13px; padding: 8px 2px 10px; }
+  .credit {
+    margin-top: auto; padding: 26px 0 6px; text-align: center;
+    font-size: 11.5px; line-height: 1.9; color: #A79FC0; letter-spacing: .2px;
+  }
+  .empty-note { text-align: center; color: #8F86A8; font-size: 14px; padding: 40px 0; }
+
+</style>
 </head>
 <body>
 <div id="app">
@@ -54,8 +269,2372 @@
 
 </div>
 
-<script src="render.js"></script>
-<script src="formulas.js"></script>
-<script src="app.js"></script>
+<script>
+/* 极简 LaTeX -> HTML 渲染器
+   只覆盖考研公式需要的子集，不依赖任何外部库，也不需要 DOM。
+   支持：\frac \sqrt ^ _ \int \iint \sum \prod \lim \left \right \text \mathrm
+        \overline \bar \hat \vec \binom \begin{cases} \quad
+        常用希腊字母、运算符、关系符 */
+(function (global) {
+  var SYM = {
+    alpha: 'α', beta: 'β', gamma: 'γ', Gamma: 'Γ', delta: 'δ', Delta: 'Δ',
+    epsilon: 'ε', varepsilon: 'ε', '{': '{', '}': '}', '|': '‖', 'downarrow': '↓', 'uparrow': '↑', zeta: 'ζ', eta: 'η', theta: 'θ', Theta: 'Θ',
+    iota: 'ι', kappa: 'κ', lambda: 'λ', Lambda: 'Λ', mu: 'μ', nu: 'ν',
+    xi: 'ξ', Xi: 'Ξ', pi: 'π', Pi: 'Π', rho: 'ρ', sigma: 'σ', Sigma: 'Σ',
+    tau: 'τ', upsilon: 'υ', phi: 'φ', varphi: 'φ', Phi: 'Φ', chi: 'χ',
+    psi: 'ψ', Psi: 'Ψ', omega: 'ω', Omega: 'Ω',
+    infty: '∞', to: '→', rightarrow: '→', longrightarrow: '⟶', Rightarrow: '⇒', Leftarrow: '⇐', Longleftarrow: '⟸',
+    leftrightarrow: '↔', Leftrightarrow: '⇔', implies: '⟹', iff: '⟺',
+    cdots: '⋯', ldots: '…', dots: '…', vdots: '⋮', ddots: '⋱',
+    cdot: '·', times: '×', div: '÷', ast: '∗', circ: '∘', star: '⋆',
+    pm: '±', mp: '∓', le: '≤', leq: '≤', ge: '≥', geq: '≥',
+    ne: '≠', neq: '≠', approx: '≈', equiv: '≡', sim: '∼', propto: '∝',
+    in: '∈', notin: '∉', subset: '⊂', subseteq: '⊆', supset: '⊃',
+    cup: '∪', cap: '∩', emptyset: '∅', varnothing: '∅', complement: '∁',
+    forall: '∀', exists: '∃', partial: '∂', nabla: '∇', prime: '′',
+    angle: '∠', perp: '⊥', parallel: '∥', triangle: '△', square: '□',
+    degree: '°', oplus: '⊕', otimes: '⊗', because: '∵', therefore: '∴', simeq: '≃', cong: '≅',
+    mid: '|', vert: '|', Vert: '‖', lvert: '|', rvert: '|',
+    lVert: '‖', rVert: '‖', langle: '⟨', rangle: '⟩'
+  };
+
+  var FUNCS = ['ln', 'log', 'lg', 'sin', 'cos', 'tan', 'cot', 'sec', 'csc',
+    'arcsin', 'arccos', 'arctan', 'arccot', 'sinh', 'cosh', 'tanh',
+    'exp', 'max', 'min', 'sup', 'inf', 'det', 'gcd', 'dim', 'rank',
+    'deg', 'arg', 'sgn', 'lim'];
+
+  var BIG = { sum: '∑', prod: '∏', int: '∫', iint: '∬', iiint: '∭', oint: '∮', oiint: '∯' };
+
+  var BAR = { overline: 'ovl', bar: 'ovl', underline: 'unl',
+    hat: 'hat', widehat: 'hat', tilde: 'tld', widetilde: 'tld',
+    vec: 'vec', dot: 'dot', ddot: 'ddot' };
+
+  function esc(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  /* 读取一个参数：{...} / \macro / 单个字符 */
+  function readArg(s, i) {
+    if (i >= s.length) return ['', i];
+    if (s[i] === '{') {
+      var depth = 1, j = i + 1;
+      while (j < s.length && depth > 0) {
+        if (s[j] === '{') depth++;
+        else if (s[j] === '}') depth--;
+        j++;
+      }
+      return [s.slice(i + 1, j - 1), j];
+    }
+    if (s[i] === '\\') {
+      var k = i + 1;
+      while (k < s.length && /[a-zA-Z]/.test(s[k])) k++;
+      if (k === i + 1) k = i + 2;
+      return [s.slice(i, k), k];
+    }
+    return [s.slice(i, i + 1), i + 1];
+  }
+
+  function render(s) {
+    var out = '', i = 0, a, b, name, j, k;
+
+    while (i < s.length) {
+      var c = s[i];
+
+      if (c === '\\') {
+        j = i + 1;
+        while (j < s.length && /[a-zA-Z]/.test(s[j])) j++;
+        name = s.slice(i + 1, j);
+
+        if (name === '') {
+          var ch = s[i + 1] || '';
+          if (ch === ',' || ch === ';' || ch === ':' || ch === ' ' || ch === '!') {
+            out += '<span class="thin"></span>';
+          } else {
+            out += esc(ch);
+          }
+          i += 2;
+          continue;
+        }
+
+        if (name === 'quad' || name === 'qquad') {
+          out += name === 'quad' ? '<span class="sp"></span>' : '<span class="sp sp2"></span>';
+          i = j; continue;
+        }
+
+        if (name === 'displaystyle' || name === 'textstyle' || name === 'scriptstyle' ||
+            name === 'limits' || name === 'nolimits' || name === 'middle') {
+          i = j; continue;
+        }
+
+        if (name === 'frac' || name === 'dfrac' || name === 'tfrac') {
+          a = readArg(s, j); i = a[1];
+          b = readArg(s, i); i = b[1];
+          out += '<span class="frac"><span class="num">' + render(a[0]) +
+                 '</span><span class="den">' + render(b[0]) + '</span></span>';
+          continue;
+        }
+
+        if (name === 'binom' || name === 'dbinom' || name === 'tbinom') {
+          a = readArg(s, j); i = a[1];
+          b = readArg(s, i); i = b[1];
+          out += '<span class="binom"><span class="bnum">' + render(a[0]) +
+                 '</span><span class="bden">' + render(b[0]) + '</span></span>';
+          continue;
+        }
+
+        if (name === 'sqrt') {
+          a = readArg(s, j); i = a[1];
+          out += '<span class="sqrt">√<span class="rad">' + render(a[0]) + '</span></span>';
+          continue;
+        }
+
+        if (name === 'begin') {
+          a = readArg(s, j); i = a[1];
+          var env = a[0];
+          var endTag = '\\end{' + env + '}';
+          var ei = s.indexOf(endTag, i);
+          var body = ei < 0 ? s.slice(i) : s.slice(i, ei);
+          i = ei < 0 ? s.length : ei + endTag.length;
+          if (env === 'cases') {
+            out += '<span class="cases"><span class="cases-body">' +
+              body.split('\\\\').map(function (row) {
+                var parts = row.split('&');
+                return '<span class="case-row"><span class="case-v">' + render(parts[0]) +
+                  '</span><span class="case-c">' + (parts[1] ? render(parts[1]) : '') +
+                  '</span></span>';
+              }).join('') + '</span></span>';
+          } else {
+            out += render(body);
+          }
+          continue;
+        }
+
+        if (name === 'end') {
+          a = readArg(s, j); i = a[1]; continue;
+        }
+
+        if (name === 'text' || name === 'mathrm' || name === 'operatorname' ||
+            name === 'mathbf' || name === 'textbf' || name === 'mbox') {
+          a = readArg(s, j); i = a[1];
+          out += '<span class="rm">' + esc(a[0].replace(/\\/g, '')) + '</span>';
+          continue;
+        }
+
+        if (BAR[name] !== undefined) {
+          a = readArg(s, j); i = a[1];
+          out += '<span class="' + BAR[name] + '">' + render(a[0]) + '</span>';
+          continue;
+        }
+
+        if (name === 'left' || name === 'right' || name === 'big' || name === 'Big' ||
+            name === 'Bigg' || name === 'bigl' || name === 'bigr') {
+          i = j;
+          if (i < s.length) {
+            var dl = s[i];
+            if (dl !== '.') out += esc(dl);
+            i++;
+          }
+          continue;
+        }
+
+        if (name === 'xrightarrow' || name === 'xleftarrow' || name === 'xRightarrow') {
+          a = readArg(s, j); i = a[1];
+          out += '<span class="xarr"><span class="xlab">' + render(a[0]) + '</span>' +
+                 (name === 'xRightarrow' ? '⇒' : '→') + '</span>';
+          continue;
+        }
+
+        if (name === 'sum' || name === 'prod' || name === 'int' || name === 'iint' ||
+            name === 'iiint' || name === 'oint' || name === 'oiint' || name === 'lim') {
+          i = j;
+          var sub = null, sup = null;
+          while (i < s.length && (s[i] === '_' || s[i] === '^')) {
+            k = s[i];
+            a = readArg(s, i + 1); i = a[1];
+            if (k === '_') sub = a[0]; else sup = a[0];
+          }
+          if (name === 'lim') {
+            out += '<span class="limop"><span class="lmsym">lim</span>' +
+                   (sub ? '<span class="lmsub">' + render(sub) + '</span>' : '') + '</span>';
+          } else if (name === 'sum' || name === 'prod') {
+            out += '<span class="bigop">' +
+                   '<span class="lmup">' + (sup ? render(sup) : '') + '</span>' +
+                   '<span class="lmsym">' + BIG[name] + '</span>' +
+                   '<span class="lmdn">' + (sub ? render(sub) : '') + '</span></span>';
+          } else {
+            out += '<span class="intop">' + BIG[name] +
+                   ((sup || sub) ? '<span class="intlim">' +
+                     '<span class="lmup">' + (sup ? render(sup) : '') + '</span>' +
+                     '<span class="lmdn">' + (sub ? render(sub) : '') + '</span></span>' : '') +
+                   '</span>';
+          }
+          continue;
+        }
+
+        if (SYM[name] !== undefined) { out += SYM[name]; i = j; continue; }
+
+        if (FUNCS.indexOf(name) >= 0) {
+          out += '<span class="fn">' + name + '</span>'; i = j; continue;
+        }
+
+        out += '<span class="unknown">' + esc(name) + '</span>';
+        i = j;
+        continue;
+      }
+
+      if (c === '^' || c === '_') {
+        a = readArg(s, i + 1); i = a[1];
+        out += (c === '^') ? '<sup>' + render(a[0]) + '</sup>'
+                           : '<sub>' + render(a[0]) + '</sub>';
+        continue;
+      }
+
+      if (c === '{') { a = readArg(s, i); i = a[1]; out += render(a[0]); continue; }
+      if (c === '}') { i++; continue; }
+      if (c === ' ') { out += ' '; i++; continue; }
+      if (/[a-zA-Z]/.test(c)) { out += '<i>' + c + '</i>'; i++; continue; }
+      if (c === '-') { out += '−'; i++; continue; }          // 真减号，别用连字符
+      if (c === "'") { out += '′'; i++; continue; }          // 撇号用 prime
+      out += esc(c);
+      i++;
+    }
+    return out;
+  }
+
+
+  /* 把"中文里夹着 LaTeX"的说明文字渲染出来：
+     只有含反斜杠的片段才当公式，其余原样输出 */
+  var MATH_RUN = /\\[A-Za-z]+[A-Za-z0-9\\{}_^=+\-*/|<>()\[\].,!'~ ]*/g;
+
+  function richText(s) {
+    if (!s) return '';
+    var out = '', last = 0, m;
+    MATH_RUN.lastIndex = 0;
+    while ((m = MATH_RUN.exec(s))) {
+      var start = m.index, end = start + m[0].length;
+      while (start > last && /[A-Za-z0-9]/.test(s.charAt(start - 1))) start--;
+      var math = s.slice(start, end).replace(/\s+$/, '');
+      if (!math) { MATH_RUN.lastIndex = end; continue; }
+      out += esc(s.slice(last, start)) + '<span class="imath">' + render(math) + '</span>';
+      last = start + math.length;
+      MATH_RUN.lastIndex = last;
+    }
+    return out + esc(s.slice(last));
+  }
+
+  global.texHTML = render;
+  global.richText = richText;
+})(typeof window !== 'undefined' ? window : this);
+
+</script>
+<script>
+/* 公式题库（考研数学一 / 二 / 三 / 396）
+   字段说明见 README.md
+   chunks：拆块；join(' ') 是完整公式；把第 trap.i 块换成 trap.t 就是"找错"题的错式
+   tags：该公式属于哪些考试范围
+*/
+var FORMULAS = [
+
+  /* ================= 高数 · 极限 ================= */
+  { id: "lim_sinx", name: "重要极限（一）", module: "高数", chapter: "极限", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\lim_{x\\to 0}", "\\frac{\\sin x}{x}", "=", "1"],
+    trap: { i: 0, t: "\\lim_{x\\to \\infty}" },
+    hook: "0/0 型里最经典的一个，正弦和自变量在 0 附近等价",
+    pitfall: "只有 x→0 才等于 1；x→∞ 时是 0（有界除以无穷）",
+    similar: "\\lim_{x\\to 0}\\frac{\\tan x}{x}=1，但 \\frac{\\sin x}{x} 在 x→∞ 不是 1" },
+
+  { id: "lim_e", name: "重要极限（二）：1 的无穷次方", module: "高数", chapter: "极限", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\lim_{x\\to\\infty}", "\\left(1+\\frac{1}{x}\\right)^{x}", "=", "e"],
+    trap: { i: 3, t: "1" },
+    hook: "1 加上无穷小，再取它的倒数次方，极限是 e",
+    pitfall: "底数必须真的趋近 1、指数趋近无穷；漏写指数就是 1",
+    similar: "\\lim_{x\\to 0}(1+x)^{\\frac{1}{x}}=e，是同一个东西换写法" },
+
+  { id: "eq_sinx", name: "等价无穷小：sin x", module: "高数", chapter: "极限", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\sin x", "\\sim", "x"], cond: "x\\to 0",
+    trap: { i: 2, t: "x^{2}" },
+    hook: "正弦在 0 附近就是它自己",
+    pitfall: "替换只在乘除因子里成立，加减里换会丢掉高阶项",
+    similar: "\\tan x\\sim x、\\arcsin x\\sim x、\\arctan x\\sim x 都成立" },
+
+  { id: "eq_1cos", name: "等价无穷小：1-cos x", module: "高数", chapter: "极限", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["1-\\cos x", "\\sim", "\\frac{x^{2}}{2}"], cond: "x\\to 0",
+    trap: { i: 2, t: "\\frac{x}{2}" },
+    hook: "余弦是二次的，所以一次都不剩、要除以 2",
+    pitfall: "阶数是 2 不是 1，写成 x/2 必错",
+    similar: "\\cos x\\sim 1-\\frac{x^{2}}{2}，反过来看就是这一条" },
+
+  { id: "eq_ln", name: "等价无穷小：ln(1+x)", module: "高数", chapter: "极限", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\ln(1+x)", "\\sim", "x"], cond: "x\\to 0",
+    trap: { i: 2, t: "e^{x}" },
+    hook: "对数在 1 附近线性化就是 x",
+    pitfall: "括号里是 1+x，不是 x；\\ln x 在 x→1 时才趋于 0",
+    similar: "\\ln(1+x)\\sim x、e^{x}-1\\sim x 是同一件事的两面" },
+
+  { id: "eq_ex", name: "等价无穷小：e^x-1", module: "高数", chapter: "极限", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["e^{x}-1", "\\sim", "x"], cond: "x\\to 0",
+    trap: { i: 0, t: "e^{x}+1" },
+    hook: "指数在 0 处斜率是 1，所以和 x 同阶",
+    pitfall: "是 e^x 减 1，不是 e^x；e^x 本身趋于 1 不趋于 0",
+    similar: "a^{x}-1\\sim x\\ln a，a=e 时退化成这一条" },
+
+  { id: "eq_1pa", name: "等价无穷小：(1+x)^a-1", module: "高数", chapter: "极限", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["(1+x)^{a}-1", "\\sim", "ax"], cond: "x\\to 0",
+    trap: { i: 2, t: "a" },
+    hook: "二项式展开的第一项，系数 a 不能丢",
+    pitfall: "漏掉系数 a；a=0 时退化成 1-1=0，公式无意义",
+    similar: "a=1/2 时 √(1+x)-1~x/2；a=-1 时 x/(1+x)~x" },
+
+  { id: "eq_tan", name: "等价无穷小：tan x - x", module: "高数", chapter: "极限", tags: ["数一", "数二", "数三"],
+    chunks: ["\\tan x-x", "\\sim", "\\frac{x^{3}}{3}"], cond: "x\\to 0",
+    trap: { i: 2, t: "\\frac{x^{2}}{2}" },
+    hook: "减去一阶项之后，剩下的是三次项",
+    pitfall: "阶数是 3，写成 x²/2 是 1-cos x 的错法",
+    similar: "\\sin x-x\\sim -\\frac{x^{3}}{6}，符号相反别混" },
+
+  /* ================= 高数 · 导数 ================= */
+  { id: "def_deriv", name: "导数定义", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["f'(x_{0})", "=", "\\lim_{\\Delta x\\to 0}", "\\frac{f(x_{0}+\\Delta x)-f(x_{0})}{\\Delta x}"],
+    trap: { i: 3, t: "\\frac{f(x_{0}+\\Delta x)+f(x_{0})}{\\Delta x}" },
+    hook: "差商取极限，分子是函数差、分母是自变量差",
+    pitfall: "分母必须和括号里加的那个增量一致，两处不同就是导数定义变形题",
+    similar: "\\lim_{x\\to x_0}\\frac{f(x)-f(x_0)}{x-x_0} 是同一个定义的另一种写法" },
+
+  { id: "d_pow", name: "幂函数求导", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["(x^{a})'", "=", "ax^{a-1}"],
+    trap: { i: 2, t: "x^{a-1}" },
+    hook: "指数搬到前面，指数自己减一",
+    pitfall: "系数 a 别丢；a=0 时结果是 0（常数）",
+    similar: "(a^{x})'=a^{x}\\ln a，底数是变量还是指数，结果完全不同" },
+
+  { id: "d_sin", name: "正弦求导", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["(\\sin x)'", "=", "\\cos x"],
+    trap: { i: 2, t: "-\\cos x" },
+    hook: "正弦的导数是余弦，没有负号",
+    pitfall: "负号是 cos 的，不是 sin 的",
+    similar: "(\\cos x)'=-\\sin x，负号在余弦这边" },
+
+  { id: "d_cos", name: "余弦求导", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["(\\cos x)'", "=", "-\\sin x"],
+    trap: { i: 2, t: "\\sin x" },
+    hook: "余弦求导出正弦，并且带负号",
+    pitfall: "漏负号是最常见的错",
+    similar: "(\\sin x)'=\\cos x，只有余弦带负号" },
+
+  { id: "d_tan", name: "正切求导", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["(\\tan x)'", "=", "\\sec^{2}x"],
+    trap: { i: 2, t: "\\sec x" },
+    hook: "正切的导数是正割的平方",
+    pitfall: "是平方，不是一次；也等于 1+\\tan^2 x",
+    similar: "(\\cot x)'=-\\csc^{2}x，符号和函数都换" },
+
+  { id: "d_ln", name: "对数求导", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["(\\ln x)'", "=", "\\frac{1}{x}"],
+    trap: { i: 2, t: "\\ln x" },
+    hook: "对数求导出倒数，最干净的一个",
+    pitfall: "(\\ln|x|)' 也是 1/x，绝对值不改变结果",
+    similar: "(\\log_a x)'=\\frac{1}{x\\ln a}，底数不是 e 时要多除一个 ln a" },
+
+  { id: "d_exp", name: "指数求导", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["(a^{x})'", "=", "a^{x}\\ln a"],
+    trap: { i: 2, t: "a^{x}" },
+    hook: "指数函数求导还是自己，再乘一个 ln a",
+    pitfall: "漏 ln a；a=e 时 ln e=1 才退化成 (e^x)'=e^x",
+    similar: "(x^{a})'=ax^{a-1}，方向完全反过来" },
+
+  { id: "d_arcsin", name: "反正弦求导", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三"],
+    chunks: ["(\\arcsin x)'", "=", "\\frac{1}{\\sqrt{1-x^{2}}}"],
+    trap: { i: 0, t: "(\\arcsin x)" },
+    hook: "根号在分母，里面是 1 减 x 平方",
+    pitfall: "和 (\\arccos x)' 只差一个负号",
+    similar: "(\\arccos x)'=-\\frac{1}{\\sqrt{1-x^{2}}}" },
+
+  { id: "d_arctan", name: "反正切求导", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三"],
+    chunks: ["(\\arctan x)'", "=", "\\frac{1}{1+x^{2}}"],
+    trap: { i: 2, t: "\\frac{1}{1-x^{2}}" },
+    hook: "分母是 1 加 x 平方，没有根号",
+    pitfall: "1+x² 不是 1-x²，那是 arctanh 才有的",
+    similar: "(\\arcsin x)'=\\frac{1}{\\sqrt{1-x^{2}}}，一个有根号一个没有" },
+
+  { id: "d_prod", name: "乘积求导法则", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["(uv)'", "=", "u'v+uv'"],
+    trap: { i: 2, t: "u'v'" },
+    hook: "轮流求导、另一个不动，两项相加",
+    pitfall: "不是 u'v'，这是最经典的误解",
+    similar: "三个因子时 (uvw)'=u'vw+uv'w+uvw'" },
+
+  { id: "d_quot", name: "商求导法则", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\left(\\frac{u}{v}\\right)'", "=", "\\frac{u'v-uv'}{v^{2}}"],
+    trap: { i: 2, t: "\\frac{uv'-u'v}{v^{2}}" },
+    hook: "分子是上导下不导、减上不导下导，顺序即符号",
+    pitfall: "分子顺序反了会整体差一个负号",
+    similar: "乘积法则两项相加，商法则两项相减" },
+
+  { id: "d_chain", name: "复合函数求导（链式法则）", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\frac{dy}{dx}", "=", "\\frac{dy}{du}", "\\cdot", "\\frac{du}{dx}"],
+    trap: { i: 3, t: "\\frac{du}{dy}" },
+    hook: "外层导数乘内层导数，一层套一层剥",
+    pitfall: "漏乘内层导数；三层复合就要乘三次",
+    similar: "多元的链式法则多几个加项：\\frac{dz}{dt}=z_x x'+z_y y'" },
+
+  { id: "d_inverse", name: "反函数求导", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三"],
+    chunks: ["(f^{-1})'(y)", "=", "\\frac{1}{f'(x)}"],
+    trap: { i: 2, t: "f'(x)" },
+    hook: "反函数的导数是原函数导数的倒数",
+    pitfall: "取倒数而不是取反；x 与 y 要对应同一对点",
+    similar: "参数方程求导也是取倒数思路：dy/dx=y'/x'" },
+
+  { id: "d_param", name: "参数方程求导", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三"],
+    chunks: ["\\frac{dy}{dx}", "=", "\\frac{y'(t)}{x'(t)}"],
+    trap: { i: 2, t: "\\frac{x'(t)}{y'(t)}" },
+    hook: "上下分别对 t 求导，再相除",
+    pitfall: "分子是 y、分母是 x，写反就全错",
+    similar: "二阶导要再补一项，(dy/dx)'/x'(t)" },
+
+  { id: "d_param2", name: "参数方程二阶导", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三"],
+    chunks: ["\\frac{d^{2}y}{dx^{2}}", "=", "\\frac{y''(t)x'(t)-x''(t)y'(t)}{x'^{3}(t)}"],
+    trap: { i: 2, t: "\\frac{y''(t)}{x''(t)}" },
+    hook: "对一阶导再对 t 求一次，别忘再除以 x'(t)",
+    pitfall: "直接写成 y''/x'' 是错的，分母要是 x' 的三次方",
+    similar: "若用公式 dy/dx = (dy/dt)·(dt/dx)，第二次求导会多出一项" }
+,
+
+  /* ================= 高数 · 中值定理与泰勒 ================= */
+  { id: "rolle", name: "罗尔定理", module: "高数", chapter: "中值定理", tags: ["数一", "数二", "数三"],
+    chunks: ["f(a)=f(b)", "\\Rightarrow", "\\exists\\,\\xi\\in(a,b),", "f'(\\xi)=0"],
+    trap: { i: 1, t: "\\Leftarrow" },
+    hook: "两端一样高，中间必有一处切线水平",
+    pitfall: "三个条件缺一不可：闭区间连续、开区间可导、端点相等",
+    similar: "罗尔是拉格朗日的特例（端点值相等时）" },
+
+  { id: "lagrange", name: "拉格朗日中值定理", module: "高数", chapter: "中值定理", tags: ["数一", "数二", "数三"],
+    chunks: ["f(b)-f(a)", "=", "f'(\\xi)(b-a)"], cond: "\\xi\\in(a,b)",
+    trap: { i: 2, t: "f(\\xi)" },
+    hook: "函数差 = 某点导数 × 区间长，割线斜率等于切线斜率",
+    pitfall: "ξ 是开区间内某点，不是端点，也不是任意点",
+    similar: "柯西中值定理把右边的 (b-a) 换成 g(b)-g(a)" },
+
+  { id: "cauchy", name: "柯西中值定理", module: "高数", chapter: "中值定理", tags: ["数一", "数二", "数三"],
+    chunks: ["\\frac{f(b)-f(a)}{g(b)-g(a)}", "=", "\\frac{f'(\\xi)}{g'(\\xi)}"],
+    trap: { i: 2, t: "\\frac{f(\\xi)}{g(\\xi)}" },
+    hook: "两个函数各取差商，比值等于同一点导数之比",
+    pitfall: "要保证 g(b)≠g(a) 且 g'(x)≠0",
+    similar: "g(x)=x 时退化成拉格朗日" },
+
+  { id: "taylor", name: "泰勒公式（拉格朗日余项）", module: "高数", chapter: "泰勒", tags: ["数一", "数二", "数三"],
+    chunks: ["f(x)", "=", "\\sum_{k=0}^{n}", "\\frac{f^{(k)}(x_{0})}{k!}(x-x_{0})^{k}", "+R_{n}(x)"],
+    trap: { i: 3, t: "\\frac{f^{(k)}(x_{0})}{n!}(x-x_{0})^{k}" },
+    hook: "按导数阶数一层层展开，最后留一个余项",
+    pitfall: "分母是 k! 不是 n!；余项有拉格朗日、佩亚诺两种形式",
+    similar: "x₀=0 时叫麦克劳林公式" },
+
+  { id: "mc_exp", name: "麦克劳林：e^x", module: "高数", chapter: "泰勒", tags: ["数一", "数二", "数三"],
+    chunks: ["e^{x}", "=", "\\sum_{n=0}^{\\infty}", "\\frac{x^{n}}{n!}"],
+    trap: { i: 3, t: "\\frac{x^{n}}{n}" },
+    hook: "阶乘在分母，所有项都正",
+    pitfall: "分母是 n! 不是 n；这是唯一没有交错符号的展开",
+    similar: "\\ln(1+x) 的展开分母是 n，且带交错符号" },
+
+  { id: "mc_sin", name: "麦克劳林：sin x", module: "高数", chapter: "泰勒", tags: ["数一", "数二", "数三"],
+    chunks: ["\\sin x", "=", "\\sum_{n=0}^{\\infty}", "\\frac{(-1)^{n}x^{2n+1}}{(2n+1)!}"],
+    trap: { i: 3, t: "\\frac{(-1)^{n}x^{2n}}{(2n)!}" },
+    hook: "只留奇次项，符号正负交替",
+    pitfall: "次数是 2n+1，别混成余弦的 2n",
+    similar: "\\cos x 是偶次项，两个展开刚好互补" },
+
+  { id: "mc_cos", name: "麦克劳林：cos x", module: "高数", chapter: "泰勒", tags: ["数一", "数二", "数三"],
+    chunks: ["\\cos x", "=", "\\sum_{n=0}^{\\infty}", "\\frac{(-1)^{n}x^{2n}}{(2n)!}"],
+    trap: { i: 3, t: "\\frac{(-1)^{n}x^{2n+1}}{(2n+1)!}" },
+    hook: "只留偶次项，第一项是 1",
+    pitfall: "次数是 2n，写成 2n+1 就变成正弦了",
+    similar: "\\sin x 的展开是它的\"导数版\"：整体右移一次幂" },
+
+  { id: "mc_ln", name: "麦克劳林：ln(1+x)", module: "高数", chapter: "泰勒", tags: ["数一", "数二", "数三"],
+    chunks: ["\\ln(1+x)", "=", "\\sum_{n=1}^{\\infty}", "\\frac{(-1)^{n-1}x^{n}}{n}"], cond: "-1<x\\le 1",
+    trap: { i: 3, t: "\\frac{(-1)^{n}x^{n}}{n!}" },
+    hook: "分母是 n 不是 n!，符号从正开始交替",
+    pitfall: "阶乘在这里不出现；x=1 时收敛到 ln2",
+    similar: "\\ln(1-x)=-\\sum\\frac{x^{n}}{n}，全部变负" },
+
+  { id: "mc_1pa", name: "麦克劳林：(1+x)^a", module: "高数", chapter: "泰勒", tags: ["数一", "数二", "数三"],
+    chunks: ["(1+x)^{a}", "=", "1+ax+\\frac{a(a-1)}{2!}x^{2}+\\cdots"], cond: "|x|<1",
+    trap: { i: 2, t: "1+ax+\\frac{a(a+1)}{2!}x^{2}+\\cdots" },
+    hook: "系数是 a 的降阶乘，一项项往下掉",
+    pitfall: "第二项系数是 a(a-1) 不是 a(a+1)；a 为负时也要照写",
+    similar: "a=-1 时就是 1/(1+x) 的几何级数" },
+
+  { id: "lhopital", name: "洛必达法则", module: "高数", chapter: "极限", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\lim\\frac{f(x)}{g(x)}", "=", "\\lim\\frac{f'(x)}{g'(x)}"], cond: "\\frac{0}{0} \\text{ 或 } \\frac{\\infty}{\\infty}",
+    trap: { i: 2, t: "\\lim\\frac{f(x)}{g'(x)}" },
+    hook: "上下同时求导，只对 0/0 或 ∞/∞ 有效",
+    pitfall: "分子分母要分别求导，不是用商的求导法则",
+    similar: "数列极限也能用，但要先换成连续变量 x" },
+
+  { id: "curvature", name: "曲率公式", module: "高数", chapter: "导数应用", tags: ["数一", "数二"],
+    chunks: ["K", "=", "\\frac{|y''|}{(1+y'^{2})^{\\frac{3}{2}}}"],
+    trap: { i: 2, t: "\\frac{|y''|}{(1+y'^{2})^{\\frac{1}{2}}}" },
+    hook: "二阶导在分子，分母是 1+y'² 的二分之三次方",
+    pitfall: "指数是 3/2 不是 1/2",
+    similar: "曲率半径 R=1/K；参数方程用 x'y''-y'x'' 代替 y''" },
+
+  /* ================= 高数 · 积分 ================= */
+  { id: "int_pow", name: "幂函数积分", module: "高数", chapter: "不定积分", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\int x^{a}\\,dx", "=", "\\frac{x^{a+1}}{a+1}+C"], cond: "a\\neq -1",
+    trap: { i: 2, t: "\\frac{x^{a}}{a}+C" },
+    hook: "指数加一，再除以加一后的指数",
+    pitfall: "a=-1 时不能用，那时是 ln|x|",
+    similar: "\\int\\frac{1}{x}dx=\\ln|x|+C 是唯一的例外" },
+
+  { id: "int_1x", name: "倒数积分", module: "高数", chapter: "不定积分", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\int\\frac{1}{x}\\,dx", "=", "\\ln|x|+C"],
+    trap: { i: 2, t: "\\ln x+C" },
+    hook: "绝对值不能丢，x 可以为负",
+    pitfall: "漏绝对值在定积分里会算出负数面积",
+    similar: "\\int\\frac{1}{x+a}dx=\\ln|x+a|+C" },
+
+  { id: "int_exp", name: "指数积分", module: "高数", chapter: "不定积分", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\int e^{x}\\,dx", "=", "e^{x}+C"],
+    trap: { i: 2, t: "\\frac{e^{x}}{x}+C" },
+    hook: "e^x 积来积去都是自己",
+    pitfall: "别把 e^x 当成幂函数去套 x^{a+1} 公式",
+    similar: "\\int a^{x}dx=\\frac{a^{x}}{\\ln a}+C" },
+
+  { id: "int_sin", name: "正弦积分", module: "高数", chapter: "不定积分", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\int\\sin x\\,dx", "=", "-\\cos x+C"],
+    trap: { i: 2, t: "\\cos x+C" },
+    hook: "积分是求导的逆，所以符号要反一次",
+    pitfall: "负号容易漏，可以求导验证",
+    similar: "\\int\\cos x\\,dx=\\sin x+C 没有负号" },
+
+  { id: "int_cos", name: "余弦积分", module: "高数", chapter: "不定积分", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\int\\cos x\\,dx", "=", "\\sin x+C"],
+    trap: { i: 2, t: "-\\sin x+C" },
+    hook: "余弦积分出正弦，干净无符号",
+    pitfall: "多写负号是常见错",
+    similar: "\\int\\sin x\\,dx=-\\cos x+C" },
+
+  { id: "int_sec2", name: "正割平方积分", module: "高数", chapter: "不定积分", tags: ["数一", "数二", "数三"],
+    chunks: ["\\int\\sec^{2}x\\,dx", "=", "\\tan x+C"],
+    trap: { i: 2, t: "\\sec x+C" },
+    hook: "tan 求导是 sec²，反过来就是它",
+    pitfall: "是 sec² 不是 sec",
+    similar: "\\int\\csc^{2}x\\,dx=-\\cot x+C" },
+
+  { id: "int_1p1x2", name: "反正切型积分", module: "高数", chapter: "不定积分", tags: ["数一", "数二", "数三"],
+    chunks: ["\\int\\frac{1}{1+x^{2}}\\,dx", "=", "\\arctan x+C"],
+    trap: { i: 2, t: "\\arcsin x+C" },
+    hook: "分母 1+x² 对应反正切，不是反正弦",
+    pitfall: "1+x² 与 1-x² 差一个符号，对应完全不同的函数",
+    similar: "\\int\\frac{1}{\\sqrt{1-x^{2}}}dx=\\arcsin x+C" },
+
+  { id: "int_arcsin", name: "反正弦型积分", module: "高数", chapter: "不定积分", tags: ["数一", "数二", "数三"],
+    chunks: ["\\int\\frac{1}{\\sqrt{1-x^{2}}}\\,dx", "=", "\\arcsin x+C"],
+    trap: { i: 2, t: "\\arctan x+C" },
+    hook: "有根号走反三角，根号下是 1-x²",
+    pitfall: "别和 1/(1+x²) 混，那个没有根号",
+    similar: "\\int\\frac{1}{a^{2}+x^{2}}dx=\\frac{1}{a}\\arctan\\frac{x}{a}+C" },
+
+  { id: "parts", name: "分部积分公式", module: "高数", chapter: "定积分", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\int u\\,dv", "=", "uv", "-", "\\int v\\,du"],
+    trap: { i: 3, t: "+\\int v\\,du" },
+    hook: "换位之后要减，不是加",
+    pitfall: "选 u 的顺序：反对幂指三（越靠前越当 u）",
+    similar: "换元法是把整体换掉，分部是把乘积拆开" },
+
+  { id: "subst", name: "换元积分公式", module: "高数", chapter: "不定积分", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\int f(\\varphi(x))\\varphi'(x)\\,dx", "=", "\\int f(u)\\,du"], cond: "u=\\varphi(x)",
+    trap: { i: 2, t: "\\int f(x)\\,du" },
+    hook: "凑出内层函数的导数，整体换成 u",
+    pitfall: "换元后必须换 dx，dx=du/φ'(x)",
+    similar: "定积分换元还要同时换上下限" },
+
+  { id: "newton", name: "牛顿-莱布尼茨公式", module: "高数", chapter: "定积分", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\int_{a}^{b} f(x)\\,dx", "=", "F(b)-F(a)"],
+    trap: { i: 2, t: "F(a)-F(b)" },
+    hook: "上减下，顺序不能反",
+    pitfall: "反了会得到负数；F 必须是 f 的原函数",
+    similar: "变上限积分求导是它的\"逆运算\"" },
+
+  { id: "int_odd", name: "奇函数在对称区间积分为零", module: "高数", chapter: "定积分", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\int_{-a}^{a} f(x)\\,dx", "=", "0"], cond: "f \\text{ 为奇函数}",
+    trap: { i: 2, t: "2\\int_{0}^{a} f(x)\\,dx" },
+    hook: "奇函数左右抵消，偶函数才翻倍",
+    pitfall: "前提是对称区间，且真的奇；偶函数这条不成立",
+    similar: "偶函数：\\int_{-a}^{a}f=2\\int_{0}^{a}f" },
+
+  { id: "int_even", name: "偶函数在对称区间翻倍", module: "高数", chapter: "定积分", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\int_{-a}^{a} f(x)\\,dx", "=", "2\\int_{0}^{a} f(x)\\,dx"], cond: "f \\text{ 为偶函数}",
+    trap: { i: 2, t: "0" },
+    hook: "左右对称，所以是单侧的两倍",
+    pitfall: "系数 2 别丢；奇函数才是 0",
+    similar: "奇函数：\\int_{-a}^{a}f=0" },
+
+  { id: "vdu", name: "变上限积分求导", module: "高数", chapter: "定积分", tags: ["数一", "数二", "数三"],
+    chunks: ["\\frac{d}{dx}", "\\int_{a}^{\\varphi(x)} f(t)\\,dt", "=", "f(\\varphi(x))\\varphi'(x)"],
+    trap: { i: 3, t: "f(\\varphi(x))" },
+    hook: "上限代进去，再乘上限自己的导数",
+    pitfall: "上限是 φ(x) 时要乘 φ'(x)；下限是常数才这么简单",
+    similar: "上下限都是函数时要拆成两段再减" },
+
+  { id: "area", name: "平面图形面积", module: "高数", chapter: "定积分应用", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["S", "=", "\\int_{a}^{b}|f(x)-g(x)|\\,dx"],
+    trap: { i: 2, t: "\\int_{a}^{b}(f(x)+g(x))\\,dx" },
+    hook: "上减下，取绝对值防交叉",
+    pitfall: "曲线交叉时分段积分，不能一次减到底",
+    similar: "极坐标面积 S=\\frac{1}{2}\\int r^{2}\\,d\\theta" },
+
+  { id: "volume", name: "旋转体体积（绕 x 轴）", module: "高数", chapter: "定积分应用", tags: ["数一", "数二", "数三"],
+    chunks: ["V", "=", "\\pi\\int_{a}^{b} y^{2}\\,dx"],
+    trap: { i: 2, t: "\\pi\\int_{a}^{b} y\\,dx" },
+    hook: "圆盘法：每个截面是圆，面积 πy²",
+    pitfall: "y 要平方；绕 y 轴时改用 x² dy",
+    similar: "绕 y 轴：V=2π∫x f(x)dx（柱壳法）" },
+
+  { id: "arclen", name: "平面曲线弧长", module: "高数", chapter: "定积分应用", tags: ["数一", "数二"],
+    chunks: ["s", "=", "\\int_{a}^{b}\\sqrt{1+y'^{2}}\\,dx"],
+    trap: { i: 2, t: "\\int_{a}^{b}(1+y')\\,dx" },
+    hook: "勾股定理的微分版：ds=√(dx²+dy²)",
+    pitfall: "是 1+y'² 开根号，不是 1+y'",
+    similar: "参数方程：s=\\int\\sqrt{x'^{2}+y'^{2}}\\,dt" },
+
+  { id: "pint", name: "p 积分收敛性", module: "高数", chapter: "反常积分", tags: ["数一", "数二", "数三"],
+    chunks: ["\\int_{1}^{+\\infty}\\frac{1}{x^{p}}\\,dx", "\\text{ 收敛}", "\\Leftrightarrow", "p>1"],
+    trap: { i: 3, t: "p<1" },
+    hook: "越大越收敛，p 要大于 1",
+    pitfall: "p=1 时是 ln x 发散，临界点别丢",
+    similar: "\\int_{0}^{1}\\frac{1}{x^{p}}dx 收敛的条件正好反过来：p<1" },
+
+  { id: "geo_series", name: "等比级数求和", module: "高数", chapter: "级数", tags: ["数一", "数三"],
+    chunks: ["\\sum_{n=0}^{\\infty} q^{n}", "=", "\\frac{1}{1-q}"], cond: "|q|<1",
+    trap: { i: 2, t: "\\frac{1}{1+q}" },
+    hook: "首项 1，公比 q，和是 1/(1-q)",
+    pitfall: "只在 |q|<1 收敛；|q|≥1 直接发散",
+    similar: "\\sum\\frac{1}{n(n+1)}=1 是裂项，不是等比" },
+
+  { id: "p_series", name: "p 级数", module: "高数", chapter: "级数", tags: ["数一", "数三"],
+    chunks: ["\\sum_{n=1}^{\\infty}\\frac{1}{n^{p}}", "\\text{ 收敛}", "\\Leftrightarrow", "p>1"],
+    trap: { i: 3, t: "p\\ge 1" },
+    hook: "和 p 积分一个道理，p 大于 1 才收敛",
+    pitfall: "p=1 是调和级数，发散",
+    similar: "\\sum\\frac{1}{n\\ln^{p}n} 收敛条件也是 p>1" },
+
+  { id: "radius", name: "幂级数收敛半径", module: "高数", chapter: "级数", tags: ["数一", "数三"],
+    chunks: ["R", "=", "\\frac{1}{\\lim_{n\\to\\infty}\\left|\\frac{a_{n+1}}{a_{n}}\\right|}"],
+    trap: { i: 2, t: "\\lim_{n\\to\\infty}\\left|\\frac{a_{n+1}}{a_{n}}\\right|" },
+    hook: "系数比的倒数，比值的倒数",
+    pitfall: "算出的是半径不是区间，端点要单独验",
+    similar: "也可用 R=1/\\lim\\sqrt[n]{|a_n|}" }
+,
+
+  /* ================= 高数 · 多元函数 ================= */
+  { id: "dz_total", name: "全微分", module: "高数", chapter: "多元微分", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["dz", "=", "\\frac{\\partial z}{\\partial x}dx", "+", "\\frac{\\partial z}{\\partial y}dy"],
+    trap: { i: 3, t: "-" },
+    hook: "各自偏导乘各自微分，然后相加",
+    pitfall: "两项之间是加号；偏导存在不一定可微",
+    similar: "一元时退化成 dy=f'(x)dx" },
+
+  { id: "chain_multi", name: "多元复合函数求导", module: "高数", chapter: "多元微分", tags: ["数一", "数二", "数三"],
+    chunks: ["\\frac{dz}{dt}", "=", "\\frac{\\partial z}{\\partial x}\\frac{dx}{dt}", "+", "\\frac{\\partial z}{\\partial y}\\frac{dy}{dt}"],
+    trap: { i: 3, t: "\\cdot" },
+    hook: "几条路径就几个乘积，最后全加起来",
+    pitfall: "路径之间是加不是乘；z 对 x 求偏导时 y 当常数",
+    similar: "z=f(x,y), y=y(x) 时 dz/dx=z_x+z_y·y'" },
+
+  { id: "implicit_z", name: "隐函数求偏导", module: "高数", chapter: "多元微分", tags: ["数一", "数二", "数三"],
+    chunks: ["\\frac{\\partial z}{\\partial x}", "=", "-\\frac{F_{x}}{F_{z}}"],
+    trap: { i: 2, t: "\\frac{F_{x}}{F_{z}}" },
+    hook: "偏导之比的负数，F 是移项后的整体",
+    pitfall: "负号别丢；分子分母是 F 对 x 与 z 的偏导",
+    similar: "F(x,y)=0 时 dy/dx=-F_x/F_y" },
+
+  { id: "dir_deriv", name: "方向导数", module: "高数", chapter: "多元微分", tags: ["数一"],
+    chunks: ["\\frac{\\partial f}{\\partial l}", "=", "f_{x}\\cos\\alpha+f_{y}\\cos\\beta"],
+    trap: { i: 2, t: "f_{x}\\sin\\alpha+f_{y}\\sin\\beta" },
+    hook: "偏导乘以方向余弦，再相加",
+    pitfall: "方向必须单位化，方向余弦不是方向向量本身",
+    similar: "梯度方向就是方向导数最大的方向" },
+
+  { id: "grad", name: "梯度", module: "高数", chapter: "多元微分", tags: ["数一"],
+    chunks: ["\\mathrm{grad}\\,f", "=", "(f_{x},\\,f_{y})"],
+    trap: { i: 2, t: "(f_{y},\\,f_{x})" },
+    hook: "偏导排成向量，x 在前 y 在后",
+    pitfall: "梯度指向增长最快的方向，不是等值线方向",
+    similar: "方向导数 = 梯度 · 单位方向向量" },
+
+  { id: "extremum", name: "二元函数极值判别", module: "高数", chapter: "多元微分", tags: ["数一", "数二", "数三"],
+    chunks: ["AC-B^{2}>0", "\\Rightarrow", "\\text{有极值}", ",", "A>0 \\text{ 极小}"],
+    trap: { i: 3, t: "\\text{有极值}" },
+    hook: "AC 减 B 平方大于零才有极值，A 定方向",
+    pitfall: "AC-B²<0 是鞍点没有极值，=0 时判别法失效",
+    similar: "一元时退化为 f''>0 极小" },
+
+  { id: "lagrange_multi", name: "条件极值（拉格朗日乘数法）", module: "高数", chapter: "多元微分", tags: ["数一", "数二", "数三"],
+    chunks: ["L(x,y,\\lambda)", "=", "f(x,y)", "+", "\\lambda\\varphi(x,y)"],
+    trap: { i: 3, t: "-" },
+    hook: "目标函数加乘数乘约束条件",
+    pitfall: "约束条件是 φ=0，取加号；解方程组时先消 λ",
+    similar: "两个约束条件就加两个 λ 项" },
+
+  { id: "dbl_polar", name: "二重积分极坐标", module: "高数", chapter: "重积分", tags: ["数一", "数二", "数三"],
+    chunks: ["\\iint_{D} f(x,y)\\,dxdy", "=", "\\iint f(r\\cos\\theta,\\,r\\sin\\theta)\\,r\\,dr\\,d\\theta"],
+    trap: { i: 2, t: "\\iint f(r\\cos\\theta,\\,r\\sin\\theta)\\,dr\\,d\\theta" },
+    hook: "别忘了雅可比 r，它是面积放大的倍数",
+    pitfall: "漏乘 r 是最常见的错",
+    similar: "二重积分换元都要乘雅可比行列式" },
+
+  { id: "triple_cyl", name: "三重积分柱坐标", module: "高数", chapter: "重积分", tags: ["数一"],
+    chunks: ["dV", "=", "r\\,dr\\,d\\theta\\,dz"],
+    trap: { i: 2, t: "dr\\,d\\theta\\,dz" },
+    hook: "柱坐标的雅可比就是 r",
+    pitfall: "漏 r；θ 的范围要看投影区域",
+    similar: "球坐标的雅可比是 r²sinφ" },
+
+  { id: "triple_sph", name: "三重积分球坐标", module: "高数", chapter: "重积分", tags: ["数一"],
+    chunks: ["dV", "=", "r^{2}\\sin\\varphi\\,dr\\,d\\varphi\\,d\\theta"],
+    trap: { i: 2, t: "r\\sin\\varphi\\,dr\\,d\\varphi\\,d\\theta" },
+    hook: "r 平方再乘 sinφ，球坐标两个因子",
+    pitfall: "r 是平方不是一次；φ 是从 z 轴量的角",
+    similar: "柱坐标 dV=r dr dθ dz，少一个 sinφ" },
+
+  { id: "green", name: "格林公式", module: "高数", chapter: "曲线积分", tags: ["数一"],
+    chunks: ["\\oint_{L} P\\,dx+Q\\,dy", "=", "\\iint_{D}\\left(\\frac{\\partial Q}{\\partial x}-\\frac{\\partial P}{\\partial y}\\right)dxdy"],
+    trap: { i: 2, t: "\\iint_{D}\\left(\\frac{\\partial P}{\\partial y}-\\frac{\\partial Q}{\\partial x}\\right)dxdy" },
+    hook: "Q 对 x 减 P 对 y，顺序就是符号",
+    pitfall: "L 必须取正向（逆时针），否则加负号",
+    similar: "空间里对应的是高斯公式" },
+
+  { id: "gauss", name: "高斯公式", module: "高数", chapter: "曲面积分", tags: ["数一"],
+    chunks: ["\\oiint_{\\Sigma}", "P\\,dydz+Q\\,dzdx+R\\,dxdy", "=", "\\iiint_{\\Omega}\\left(\\frac{\\partial P}{\\partial x}+\\frac{\\partial Q}{\\partial y}+\\frac{\\partial R}{\\partial z}\\right)dV"],
+    trap: { i: 3, t: "\\iiint_{\\Omega}\\left(\\frac{\\partial P}{\\partial x}-\\frac{\\partial Q}{\\partial y}+\\frac{\\partial R}{\\partial z}\\right)dV" },
+    hook: "散度三重积分，三项全加",
+    pitfall: "Σ 是闭曲面且取外侧，不闭合要补面",
+    similar: "格林公式是它在平面上的特例" },
+
+  { id: "stokes", name: "斯托克斯公式", module: "高数", chapter: "曲线积分", tags: ["数一"],
+    chunks: ["\\oint_{\\Gamma} P\\,dx+Q\\,dy+R\\,dz", "=", "\\iint_{\\Sigma}", "\\mathrm{rot}\\,\\mathbf{F}\\cdot\\mathbf{n}\\,dS"],
+    trap: { i: 2, t: "\\iiint_{\\Sigma}\\mathrm{rot}\\,\\mathbf{F}\\cdot\\mathbf{n}\\,dV" },
+    hook: "环量等于旋度在曲面上的通量",
+    pitfall: "Γ 的方向与 Σ 的法向要符合右手法则",
+    similar: "格林公式对应旋度在平面区域上的积分" },
+
+  { id: "line1", name: "第一类曲线积分", module: "高数", chapter: "曲线积分", tags: ["数一"],
+    chunks: ["\\int_{L} f(x,y)\\,ds", "=", "\\int_{\\alpha}^{\\beta} f\\left(x(t),y(t)\\right)\\sqrt{x'^{2}+y'^{2}}\\,dt"],
+    trap: { i: 2, t: "\\int_{\\alpha}^{\\beta} f\\left(x(t),y(t)\\right)\\,dt" },
+    hook: "弧长元素带根号，ds 不能丢",
+    pitfall: "上下限必须 α<β，弧长积分与方向无关",
+    similar: "第二类曲线积分与方向有关，符号会变" },
+
+  { id: "line2", name: "曲线积分与路径无关的条件", module: "高数", chapter: "曲线积分", tags: ["数一"],
+    chunks: ["\\frac{\\partial Q}{\\partial x}", "=", "\\frac{\\partial P}{\\partial y}", "\\Leftrightarrow", "\\int_{L} P\\,dx+Q\\,dy \\text{ 与路径无关}"],
+    trap: { i: 2, t: "-\\frac{\\partial P}{\\partial y}" },
+    hook: "交叉偏导相等，积分只看端点",
+    pitfall: "单连通区域才成立；区域有洞时要小心绕行",
+    similar: "这是格林公式被积函数为零的情形" },
+
+  /* ================= 高数 · 微分方程 ================= */
+  { id: "ode_sep", name: "可分离变量方程", module: "高数", chapter: "微分方程", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\frac{dy}{dx}", "=", "f(x)g(y)", "\\Rightarrow", "\\int\\frac{dy}{g(y)}=\\int f(x)\\,dx"],
+    trap: { i: 4, t: "\\int g(y)\\,dy=\\int f(x)\\,dx" },
+    hook: "y 归一边、x 归一边，各积各的",
+    pitfall: "除 g(y) 时要先讨论 g(y)=0 的解",
+    similar: "齐次方程靠换元 u=y/x 也能化成可分离" },
+
+  { id: "ode_linear", name: "一阶线性微分方程通解", module: "高数", chapter: "微分方程", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["y'", "+", "P(x)y", "=", "Q(x)"],
+    trap: { i: 1, t: "-" },
+    hook: "标准形式是 y'+P(x)y=Q(x)，右边是加号",
+    pitfall: "先化成标准形式，P、Q 的符号最容易错",
+    similar: "伯努利方程右边多一个 y^n 因子" },
+
+  { id: "ode_linear_sol", name: "一阶线性方程求解公式", module: "高数", chapter: "微分方程", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["y", "=", "e^{-\\int P\\,dx}", "\\left(\\int Q e^{\\int P\\,dx}\\,dx+C\\right)"],
+    trap: { i: 2, t: "e^{\\int P\\,dx}" },
+    hook: "先乘积分因子，再整体除以它",
+    pitfall: "外面是负号指数；里面的积分因子符号相反",
+    similar: "常数变易法推出同一个式子" },
+
+  { id: "ode_homog", name: "齐次方程（y/x 型）", module: "高数", chapter: "微分方程", tags: ["数一", "数二", "数三"],
+    chunks: ["y'", "=", "f\\left(\\frac{y}{x}\\right)", "\\Rightarrow", "u+xu'=f(u)"], cond: "u=\\frac{y}{x}",
+    trap: { i: 4, t: "u-xu'=f(u)" },
+    hook: "令 y=ux，y'=u+xu'",
+    pitfall: "是 u+xu'，不是 u-xu'；乘积法则别写反",
+    similar: "形如 y'=(ax+by+c)/(dx+ey+f) 的要做平移" },
+
+  { id: "ode_bernoulli", name: "伯努利方程", module: "高数", chapter: "微分方程", tags: ["数一"],
+    chunks: ["y'", "+", "P(x)y", "=", "Q(x)y^{n}"],
+    trap: { i: 4, t: "Q(x)y" },
+    hook: "右边多一个 y 的 n 次方，n≠0,1",
+    pitfall: "换元 z=y^{1-n} 把非线性化线性；n=1 时本身就是线性",
+    similar: "n=0 时退化成普通一阶线性方程" },
+
+  { id: "ode2_char", name: "二阶常系数齐次方程特征方程", module: "高数", chapter: "微分方程", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["y''+py'+qy", "=", "0", "\\Leftrightarrow", "r^{2}+pr+q=0"],
+    trap: { i: 4, t: "r^{2}+pr+q" },
+    hook: "把阶数换成 r 的次数，方程变代数方程",
+    pitfall: "两个不等实根、重根、共轭复根，三种情况的解形式不同",
+    similar: "非齐次方程先求齐次通解再加特解" },
+
+  { id: "ode2_sol", name: "二阶常系数齐次通解（两不等实根）", module: "高数", chapter: "微分方程", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["y", "=", "C_{1}e^{r_{1}x}", "+", "C_{2}e^{r_{2}x}"],
+    trap: { i: 3, t: "\\cdot" },
+    hook: "两个根各对应一个指数解，再线性组合",
+    pitfall: "重根时要补 x e^{rx}；共轭复根要换成正弦余弦",
+    similar: "复根 r=α±βi 时解为 e^{αx}(C₁cosβx+C₂sinβx)" },
+
+  { id: "ode_struct", name: "非齐次方程解的结构", module: "高数", chapter: "微分方程", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["y", "=", "Y", "+", "y^{*}"], cond: "Y \\text{ 齐次通解},\\, y^{*} \\text{ 特解}",
+    trap: { i: 2, t: "-" },
+    hook: "齐次通解加一个特解，就是全部解",
+    pitfall: "特解只要求一个，不用带常数",
+    similar: "叠加原理：右边是两个函数时特解也能相加" },
+
+  { id: "euler_eq", name: "欧拉方程", module: "高数", chapter: "微分方程", tags: ["数一"],
+    chunks: ["x^{2}y''", "+", "pxy'", "+", "qy", "=", "0"],
+    trap: { i: 3, t: "-" },
+    hook: "x 的幂次与导数阶数一致，令 x=e^t 化成常系数",
+    pitfall: "换元后 y' 要乘 1/x，y'' 乘 1/x² 并多一项",
+    similar: "常系数方程没有 x 的幂次因子" }
+,
+
+  /* ================= 线代 · 行列式与矩阵 ================= */
+  { id: "det_prod", name: "行列式的乘法性质", module: "线代", chapter: "行列式", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["|AB|", "=", "|A|", "|B|"],
+    trap: { i: 0, t: "|A+B|" },
+    hook: "乘积的行列式等于行列式的乘积",
+    pitfall: "|A+B|≠|A|+|B|，这是最高频的坑",
+    similar: "|kA|=k^n|A|，系数要按阶数提" },
+
+  { id: "det_k", name: "数乘矩阵的行列式", module: "线代", chapter: "行列式", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["|kA|", "=", "k^{n}|A|"],
+    trap: { i: 2, t: "k|A|" },
+    hook: "每个元素都乘 k，共 n 行，所以是 k 的 n 次方",
+    pitfall: "漏指数 n；只有一行乘 k 才是 k|A|",
+    similar: "|A^{T}|=|A|，转置不影响行列式" },
+
+  { id: "det_T", name: "转置的行列式", module: "线代", chapter: "行列式", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["|A^{T}|", "=", "|A|"],
+    trap: { i: 2, t: "|A|^{-1}" },
+    hook: "转置不改变行列式",
+    pitfall: "别和 |A^{-1}|=1/|A| 混",
+    similar: "|A^{*}|=|A|^{n-1}" },
+
+  { id: "det_inv", name: "逆矩阵的行列式", module: "线代", chapter: "行列式", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["|A^{-1}|", "=", "\\frac{1}{|A|}"],
+    trap: { i: 2, t: "-|A|" },
+    hook: "由 |A||A^{-1}|=|E|=1 推出来",
+    pitfall: "是倒数不是相反数",
+    similar: "|A^{*}|=|A|^{n-1}，指数是 n-1" },
+
+  { id: "adj", name: "伴随矩阵基本公式", module: "线代", chapter: "矩阵", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["A\\,A^{*}", "=", "A^{*}A", "=", "|A|E"],
+    trap: { i: 4, t: "|A|" },
+    hook: "伴随乘回原矩阵，得到数量矩阵 |A|E",
+    pitfall: "结果是矩阵不是数；漏 E 就错了",
+    similar: "两边同除 |A| 就得到 A^{-1}=A^{*}/|A|" },
+
+  { id: "inv_adj", name: "用伴随求逆", module: "线代", chapter: "矩阵", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["A^{-1}", "=", "\\frac{1}{|A|}A^{*}"], cond: "|A|\\neq 0",
+    trap: { i: 2, t: "A^{*}" },
+    hook: "伴随除以行列式，分母不能为零",
+    pitfall: "只有方阵且 |A|≠0 才有逆",
+    similar: "初等行变换求逆是另一条路" },
+
+  { id: "inv_prod", name: "乘积的逆", module: "线代", chapter: "矩阵", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["(AB)^{-1}", "=", "B^{-1}A^{-1}"],
+    trap: { i: 2, t: "A^{-1}B^{-1}" },
+    hook: "穿脱顺序反过来，像脱衣服",
+    pitfall: "顺序不能交换，A^{-1}B^{-1} 一般不对",
+    similar: "(AB)^{T}=B^{T}A^{T} 也是反序" },
+
+  { id: "inv_T", name: "转置与求逆可交换", module: "线代", chapter: "矩阵", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["(A^{T})^{-1}", "=", "(A^{-1})^{T}"],
+    trap: { i: 2, t: "(A^{-1})^{-T}" },
+    hook: "先转置再求逆，等于先求逆再转置",
+    pitfall: "不是 A 本身；常用于证明题",
+    similar: "两者都等于 (A^{-1})^T" },
+
+  { id: "rank_prod", name: "乘积的秩", module: "线代", chapter: "秩", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["r(AB)", "\\le", "\\min\\{r(A),\\,r(B)\\}"]  ,
+    trap: { i: 1, t: "\\geq" },
+    hook: "乘出来只会降秩，不会升秩",
+    pitfall: "反向不成立；A、B 都满秩时取等号",
+    similar: "r(A+B)≤r(A)+r(B)，加法也只能升到和方法" },
+
+  { id: "rank_sum", name: "和的秩", module: "线代", chapter: "秩", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["r(A+B)", "\\le", "r(A)+r(B)"],
+    trap: { i: 2, t: "\\max\\{r(A),\\,r(B)\\}" },
+    hook: "和的秩不超过秩之和",
+    pitfall: "取不到 max，是两个相加的上界",
+    similar: "r(AB)≤min{r(A),r(B)}，乘法取 min" },
+
+  { id: "eig_def", name: "特征值与特征向量定义", module: "线代", chapter: "特征值", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["A\\mathbf{x}", "=", "\\lambda\\mathbf{x}"], cond: "\\mathbf{x}\\neq 0",
+    trap: { i: 2, t: "\\lambda A\\mathbf{x}" },
+    hook: "矩阵作用在向量上，只改变长度不改变方向",
+    pitfall: "特征向量不能是零向量；λ 可以是 0",
+    similar: "求 λ 用特征方程 |A-λE|=0" },
+
+  { id: "eig_sum", name: "特征值之和等于迹", module: "线代", chapter: "特征值", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\sum_{i=1}^{n}\\lambda_{i}", "=", "\\mathrm{tr}(A)"],
+    trap: { i: 2, t: "|A|" },
+    hook: "所有特征值加起来是主对角线之和",
+    pitfall: "和对应迹、积对应行列式，别互换",
+    similar: "\\prod\\lambda_i=|A|" },
+
+  { id: "eig_prod", name: "特征值之积等于行列式", module: "线代", chapter: "特征值", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\prod_{i=1}^{n}\\lambda_{i}", "=", "|A|"],
+    trap: { i: 2, t: "\\mathrm{tr}(A)" },
+    hook: "所有特征值乘起来是行列式",
+    pitfall: "n 阶矩阵有 n 个特征值（含重根、复根）",
+    similar: "\\sum\\lambda_i=\\mathrm{tr}(A)" },
+
+  { id: "similar_diag", name: "相似对角化", module: "线代", chapter: "相似", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["P^{-1}AP", "=", "\\Lambda"], cond: "\\Lambda=\\mathrm{diag}(\\lambda_{1},\\cdots,\\lambda_{n})",
+    trap: { i: 0, t: "PAP^{-1}" },
+    hook: "P 的列就是特征向量，Λ 对角线上是特征值",
+    pitfall: "P 必须是可逆的；要有 n 个线性无关特征向量",
+    similar: "实对称矩阵一定可以正交对角化" },
+
+  { id: "sym_ortho", name: "实对称矩阵正交对角化", module: "线代", chapter: "二次型", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["Q^{T}AQ", "=", "\\Lambda"], cond: "Q^{T}Q=E",
+    trap: { i: 0, t: "Q^{-1}AQ" },
+    hook: "正交矩阵的逆就是它的转置",
+    pitfall: "不同特征值的特征向量会自动正交，重根的要施密特正交化",
+    similar: "一般矩阵是 P^{-1}AP，这里用 Q^{T}" },
+
+  { id: "quad_form", name: "二次型的矩阵表示", module: "线代", chapter: "二次型", tags: ["数一", "数二", "数三"],
+    chunks: ["f(x_{1},\\cdots,x_{n})", "=", "\\mathbf{x}^{T}A\\mathbf{x}"],
+    trap: { i: 2, t: "\\mathbf{x}^{T}\\mathbf{x}" },
+    hook: "交叉项系数要除以 2 再放进矩阵",
+    pitfall: "a_ij 是 x_i x_j 项系数的一半，A 必须对称",
+    similar: "标准形就是把 A 对角化后的 x^TΛx" },
+
+  { id: "positive_def", name: "正定二次型的判别", module: "线代", chapter: "二次型", tags: ["数一", "数二", "数三"],
+    chunks: ["\\Delta_{k}>0", "(", "k=1,2,\\cdots,n", ")", "\\Leftrightarrow", "\\text{正定}"],
+    trap: { i: 0, t: "\\Delta_{k}\\geq 0" },
+    hook: "顺序主子式全大于零，一个都不能等于零",
+    pitfall: "必须严格大于 0；等于 0 是半正定",
+    similar: "也可用特征值全为正来判断" },
+
+  { id: "gram", name: "施密特正交化", module: "线代", chapter: "向量组", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\beta_{2}", "=", "\\alpha_{2}", "-", "\\frac{(\\alpha_{2},\\beta_{1})}{(\\beta_{1},\\beta_{1})}\\beta_{1}"],
+    trap: { i: 3, t: "+" },
+    hook: "减掉在已有方向上的投影，剩下的才垂直",
+    pitfall: "投影系数分子是内积、分母是 β 自己的内积",
+    similar: "β₁=α₁ 直接取第一个向量" },
+
+  { id: "vec_angle", name: "向量夹角与内积", module: "线代", chapter: "向量组", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\cos\\theta", "=", "\\frac{(\\alpha,\\beta)}{|\\alpha|\\,|\\beta|}"],
+    trap: { i: 2, t: "\\frac{|\\alpha|\\,|\\beta|}{(\\alpha,\\beta)}" },
+    hook: "内积除以两个模长，就是余弦",
+    pitfall: "正交时内积为 0；分母的模长别丢",
+    similar: "内积为零 ⟺ 两向量垂直" },
+
+  { id: "dependent", name: "线性相关的秩判别", module: "线代", chapter: "向量组", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\alpha_{1},\\cdots,\\alpha_{s}", "\\text{ 线性相关}", "\\Leftrightarrow", "r(\\alpha_{1},\\cdots,\\alpha_{s})<s"],
+    trap: { i: 3, t: "r(\\alpha_{1},\\cdots,\\alpha_{s})=s" },
+    hook: "向量个数多于秩就相关",
+    pitfall: "n+1 个 n 维向量必相关，因为 r≤n",
+    similar: "线性无关 ⟺ 秩等于向量个数" },
+
+  { id: "nonhomog", name: "非齐次线性方程组解的判定", module: "线代", chapter: "方程组", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["r(A)", "=", "r(A,b)", "=", "n", "\\Leftrightarrow", "\\text{唯一解}"],
+    trap: { i: 4, t: "n+1" },
+    hook: "系数矩阵与增广矩阵同秩只剩唯一解，秩小于未知数就是无穷多解",
+    pitfall: "未知数个数是 n；r(A)≠r(A,b) 时无解",
+    similar: "齐次方程组总有零解，秩等于 n 才只有零解" }
+,
+
+  /* ================= 概率 · 事件与概率 ================= */
+  { id: "p_classical", name: "古典概型", module: "概率", chapter: "概率基础", tags: ["数一", "数三", "396"],
+    chunks: ["P(A)", "=", "\\frac{A \\text{ 包含的样本点数}}{\\text{样本点总数}}"],
+    trap: { i: 2, t: "\\frac{\\text{样本点总数}}{A \\text{ 包含的样本点数}}" },
+    hook: "数分子、数分母，分子分母要同一套数法",
+    pitfall: "必须等可能；有放回与无放回数法不同",
+    similar: "几何概型把\"数个数\"换成\"量长度/面积\"" },
+
+  { id: "p_cond", name: "条件概率", module: "概率", chapter: "概率基础", tags: ["数一", "数三", "396"],
+    chunks: ["P(A\\mid B)", "=", "\\frac{P(AB)}{P(B)}"], cond: "P(B)>0",
+    trap: { i: 2, t: "\\frac{P(B)}{P(AB)}" },
+    hook: "已知 B 发生，把样本空间缩到 B 里",
+    pitfall: "分母是条件事件的概率；P(AB) 与 P(A)P(B) 不同",
+    similar: "独立时 P(A|B)=P(A)" },
+
+  { id: "p_total", name: "全概率公式", module: "概率", chapter: "概率基础", tags: ["数一", "数三", "396"],
+    chunks: ["P(A)", "=", "\\sum_{i=1}^{n}", "P(B_{i})P(A\\mid B_{i})"],
+    trap: { i: 3, t: "P(B_{i})+P(A\\mid B_{i})" },
+    hook: "按原因分组，每组概率相乘再相加",
+    pitfall: "B_i 必须是完备事件组（互斥且并为全集）",
+    similar: "贝叶斯公式是它的逆问题" },
+
+  { id: "p_bayes", name: "贝叶斯公式", module: "概率", chapter: "概率基础", tags: ["数一", "数三", "396"],
+    chunks: ["P(B_{i}\\mid A)", "=", "\\frac{P(B_{i})P(A\\mid B_{i})}{\\sum_{j}P(B_{j})P(A\\mid B_{j})}"],
+    trap: { i: 2, t: "\\frac{P(A\\mid B_{i})}{\\sum_{j}P(B_{j})P(A\\mid B_{j})}" },
+    hook: "由结果反推原因，分母就是全概率",
+    pitfall: "分子漏掉先验 P(B_i)，那就变成条件概率的一半",
+    similar: "全概率是正推，贝叶斯是反推" },
+
+  { id: "p_indep", name: "两事件独立", module: "概率", chapter: "概率基础", tags: ["数一", "数三", "396"],
+    chunks: ["P(AB)", "=", "P(A)P(B)"],
+    trap: { i: 2, t: "P(A)+P(B)" },
+    hook: "联合概率等于各自概率相乘",
+    pitfall: "互斥与独立不是一回事：互斥时 P(AB)=0",
+    similar: "n 个事件两两独立不等于相互独立" },
+
+  /* ================= 概率 · 常见分布 ================= */
+  { id: "d_binom", name: "二项分布 B(n,p)", module: "概率", chapter: "常见分布", tags: ["数一", "数三", "396"],
+    chunks: ["P\\{X=k\\}", "=", "\\binom{n}{k}", "p^{k}(1-p)^{n-k}"],
+    trap: { i: 2, t: "\\frac{n}{k}" },
+    hook: "n 次独立试验中恰好成功 k 次",
+    pitfall: "漏组合数；n 次试验必须独立同分布",
+    similar: "n=1 时退化为两点分布；n 大 p 小时近似泊松" },
+
+  { id: "d_poisson", name: "泊松分布 P(λ)", module: "概率", chapter: "常见分布", tags: ["数一", "数三", "396"],
+    chunks: ["P\\{X=k\\}", "=", "\\frac{\\lambda^{k}e^{-\\lambda}}{k!}"], cond: "k=0,1,2,\\cdots",
+    trap: { i: 2, t: "\\frac{\\lambda^{k}e^{\\lambda}}{k}" },
+    hook: "λ 的 k 次方乘 e 的负 λ，除以 k 的阶乘",
+    pitfall: "指数是 e^{-λ} 不是 e^{λ}；期望方差都等于 λ",
+    similar: "二项分布在 n→∞、np→λ 时极限是泊松" },
+
+  { id: "d_geom", name: "几何分布", module: "概率", chapter: "常见分布", tags: ["数一", "数三"],
+    chunks: ["P\\{X=k\\}", "=", "(1-p)^{k-1}p"], cond: "k=1,2,\\cdots",
+    trap: { i: 2, t: "(1-p)^{k}p" },
+    hook: "前 k-1 次都失败，第 k 次才成功",
+    pitfall: "指数是 k-1；期望是 1/p",
+    similar: "无记忆性：P{X>m+n|X>m}=P{X>n}" },
+
+  { id: "d_hyper", name: "超几何分布", module: "概率", chapter: "常见分布", tags: ["数一"],
+    chunks: ["P\\{X=k\\}", "=", "\\frac{\\binom{M}{k}\\binom{N-M}{n-k}}{\\binom{N}{n}}"],
+    trap: { i: 2, t: "\\frac{\\binom{M}{k}\\binom{N-M}{k}}{\\binom{N}{n}}" },
+    hook: "从不合格品 M 个里取 k 个，从合格品里取剩下的",
+    pitfall: "是无放回抽样，和二项分布（有放回）不同",
+    similar: "N 很大时近似二项分布" },
+
+  { id: "d_uniform", name: "均匀分布 U(a,b)", module: "概率", chapter: "常见分布", tags: ["数一", "数三", "396"],
+    chunks: ["f(x)", "=", "\\frac{1}{b-a}"], cond: "a<x<b",
+    trap: { i: 2, t: "\\frac{1}{a-b}" },
+    hook: "区间越长度越小，总面积恒为 1",
+    pitfall: "a<b 顺序；区间外密度为 0",
+    similar: "E=(a+b)/2，D=(b-a)²/12" },
+
+  { id: "d_exponential", name: "指数分布 E(λ)", module: "概率", chapter: "常见分布", tags: ["数一", "数三", "396"],
+    chunks: ["f(x)", "=", "\\lambda e^{-\\lambda x}"], cond: "x>0",
+    trap: { i: 2, t: "\\lambda e^{\\lambda x}" },
+    hook: "λ 乘 e 的负 λx，和泊松同一个 λ",
+    pitfall: "指数是 -λx；E=1/λ，D=1/λ²，别记成 λ²",
+    similar: "无记忆性是指数分布独有的" },
+
+  { id: "d_normal", name: "正态分布密度函数", module: "概率", chapter: "常见分布", tags: ["数一", "数三", "396"],
+    chunks: ["f(x)", "=", "\\frac{1}{\\sqrt{2\\pi}\\,\\sigma}", "e^{-\\frac{(x-\\mu)^{2}}{2\\sigma^{2}}}"],
+    trap: { i: 3, t: "e^{-\\frac{(x-\\mu)^{2}}{\\sigma^{2}}}" },
+    hook: "分母根号下 2π 再乘 σ，指数里除以 2σ²",
+    pitfall: "指数分母漏掉 2 是最常见的错",
+    similar: "标准化后变成标准正态，密度只剩常数乘指数" },
+
+  { id: "d_normal_std", name: "正态分布标准化", module: "概率", chapter: "常见分布", tags: ["数一", "数三", "396"],
+    chunks: ["Z", "=", "\\frac{X-\\mu}{\\sigma}", "\\sim", "N(0,1)"], cond: "X\\sim N(\\mu,\\sigma^{2})",
+    trap: { i: 2, t: "\\frac{X-\\sigma}{\\mu}" },
+    hook: "减期望、除标准差，就变成标准正态",
+    pitfall: "除的是标准差 σ 不是方差 σ²",
+    similar: "Φ(-x)=1-Φ(x)，查表常用" },
+
+  { id: "F_def", name: "分布函数定义", module: "概率", chapter: "随机变量", tags: ["数一", "数三", "396"],
+    chunks: ["F(x)", "=", "P\\{X\\le x\\}"],
+    trap: { i: 2, t: "P\\{X<x\\}" },
+    hook: "小于等于，右边连续、左边跳跃",
+    pitfall: "是 ≤ 不是 <；F 单调不减且右连续",
+    similar: "P{a<X≤b}=F(b)-F(a)" },
+
+  { id: "F_pdf", name: "密度函数与分布函数的关系", module: "概率", chapter: "随机变量", tags: ["数一", "数三", "396"],
+    chunks: ["F(x)", "=", "\\int_{-\\infty}^{x} f(t)\\,dt", ",", "f(x)=F'(x)"],
+    trap: { i: 3, t: "f(x)=F''(x)" },
+    hook: "密度积分得分布函数，求导反过来",
+    pitfall: "是 F'=f 不是 F''；间断点处要小心",
+    similar: "离散型用求和代替积分" },
+
+  { id: "joint", name: "二维连续型边缘密度", module: "概率", chapter: "二维分布", tags: ["数一", "数三"],
+    chunks: ["f_{X}(x)", "=", "\\int_{-\\infty}^{+\\infty} f(x,y)\\,dy"],
+    trap: { i: 2, t: "\\int_{-\\infty}^{+\\infty} f(x,y)\\,dx" },
+    hook: "求 X 的边缘就把 Y 积掉",
+    pitfall: "积哪个变量别搞反；积分限来自联合密度的支撑",
+    similar: "联合分布函数 F(x,y)=∫∫f(u,v)dudv" },
+
+  { id: "indep_pdf", name: "连续型随机变量独立", module: "概率", chapter: "二维分布", tags: ["数一", "数三"],
+    chunks: ["f(x,y)", "=", "f_{X}(x)f_{Y}(y)"],
+    trap: { i: 2, t: "f_{X}(x)+f_{Y}(y)" },
+    hook: "联合密度能拆成两个的乘积就独立",
+    pitfall: "拆得开还要支撑是矩形；相关系数为 0 不等于独立",
+    similar: "离散型对应 P{X=x,Y=y}=P{X=x}P{Y=y}" },
+
+  /* ================= 概率 · 数字特征 ================= */
+  { id: "E_def", name: "数学期望（连续型）", module: "概率", chapter: "数字特征", tags: ["数一", "数三", "396"],
+    chunks: ["E(X)", "=", "\\int_{-\\infty}^{+\\infty} x f(x)\\,dx"],
+    trap: { i: 2, t: "\\int_{-\\infty}^{+\\infty} f(x)\\,dx" },
+    hook: "取值乘密度，整体积分",
+    pitfall: "漏掉 x；要求绝对收敛，否则期望不存在",
+    similar: "离散型是 Σ x_k p_k" },
+
+  { id: "E_prop", name: "期望的线性性质", module: "概率", chapter: "数字特征", tags: ["数一", "数三", "396"],
+    chunks: ["E(aX+bY)", "=", "aE(X)+bE(Y)"],
+    trap: { i: 2, t: "aE(X)\\cdot bE(Y)" },
+    hook: "期望是线性的，不需要独立",
+    pitfall: "E(XY)=E(X)E(Y) 才需要独立",
+    similar: "E(X+Y)=E(X)+E(Y) 对任意随机变量成立" },
+
+  { id: "D_def", name: "方差计算公式", module: "概率", chapter: "数字特征", tags: ["数一", "数三", "396"],
+    chunks: ["D(X)", "=", "E(X^{2})", "-", "[E(X)]^{2}"],
+    trap: { i: 3, t: "+" },
+    hook: "平方的期望减期望的平方",
+    pitfall: "两项顺序反了会得到负方差；别写成 [E(X²)]² ",
+    similar: "D(X)=E[(X-E(X))²] 是定义" },
+
+  { id: "D_prop", name: "方差的性质", module: "概率", chapter: "数字特征", tags: ["数一", "数三", "396"],
+    chunks: ["D(aX+b)", "=", "a^{2}D(X)"],
+    trap: { i: 2, t: "aD(X)" },
+    hook: "平移不影响方差，缩放要平方",
+    pitfall: "常数 b 直接消失；系数 a 要平方",
+    similar: "D(X)=0 ⟺ X 几乎处处为常数" },
+
+  { id: "D_XY", name: "和差的方差", module: "概率", chapter: "数字特征", tags: ["数一", "数三", "396"],
+    chunks: ["D(X\\pm Y)", "=", "D(X)+D(Y)", "\\pm", "2\\mathrm{Cov}(X,Y)"],
+    trap: { i: 3, t: "\\mp" },
+    hook: "方差不能直接加减，交叉项是协方差的两倍",
+    pitfall: "独立时协方差为 0 才能省略这一项",
+    similar: "D(X-Y)=DX+DY-2Cov，符号跟前面的 ± 一致" },
+
+  { id: "cov", name: "协方差", module: "概率", chapter: "数字特征", tags: ["数一", "数三", "396"],
+    chunks: ["\\mathrm{Cov}(X,Y)", "=", "E(XY)", "-", "E(X)E(Y)"],
+    trap: { i: 3, t: "+" },
+    hook: "乘积的期望减期望的乘积",
+    pitfall: "Cov(X,X)=D(X)；独立则协方差为 0，反之不然",
+    similar: "相关系数 ρ 是协方差的标准化版本" },
+
+  { id: "rho", name: "相关系数", module: "概率", chapter: "数字特征", tags: ["数一", "数三", "396"],
+    chunks: ["\\rho_{XY}", "=", "\\frac{\\mathrm{Cov}(X,Y)}{\\sqrt{D(X)}\\,\\sqrt{D(Y)}}"],
+    trap: { i: 2, t: "\\frac{\\mathrm{Cov}(X,Y)}{D(X)\\,D(Y)}" },
+    hook: "协方差除以两个标准差",
+    pitfall: "分母是标准差不是方差；|ρ|≤1",
+    similar: "ρ=±1 时 X 与 Y 以概率 1 线性相关" },
+
+  { id: "cheb", name: "切比雪夫不等式", module: "概率", chapter: "大数定律", tags: ["数一", "数三"],
+    chunks: ["P\\{|X-E(X)|\\ge \\varepsilon\\}", "\\le", "\\frac{D(X)}{\\varepsilon^{2}}"],
+    trap: { i: 1, t: "\\ge" },
+    hook: "偏离超过 ε 的概率，被方差除以 ε² 压住",
+    pitfall: "不等号方向别反；右边可能大于 1，此时无意义",
+    similar: "大数定律就是用它证的" },
+
+  { id: "LLN", name: "辛钦大数定律", module: "概率", chapter: "大数定律", tags: ["数一", "数三"],
+    chunks: ["\\frac{1}{n}\\sum_{i=1}^{n}X_{i}", "\\xrightarrow{P}", "\\mu"],
+    trap: { i: 1, t: "\\xrightarrow{d}" },
+    hook: "样本均值依概率收敛到期望",
+    pitfall: "要求独立同分布且期望存在，方差可以没有",
+    similar: "中心极限定理说的是分布，不是收敛值" },
+
+  { id: "CLT", name: "中心极限定理", module: "概率", chapter: "大数定律", tags: ["数一", "数三"],
+    chunks: ["\\frac{\\sum_{i=1}^{n}X_{i}-n\\mu}{\\sqrt{n}\\sigma}", "\\to", "N(0,1)"],
+    trap: { i: 2, t: "N(\\mu,\\sigma^{2})" },
+    hook: "标准化之后趋近标准正态，和原分布无关",
+    pitfall: "分母是 √n σ；n 要大才近似得好",
+    similar: "二项分布的正态近似就是它的特例" },
+
+  /* ================= 统计 ================= */
+  { id: "chi2", name: "χ² 分布", module: "概率", chapter: "抽样分布", tags: ["数一"],
+    chunks: ["\\chi^{2}", "=", "\\sum_{i=1}^{n}Z_{i}^{2}", "\\sim", "\\chi^{2}(n)"], cond: "Z_{i}\\sim N(0,1)",
+    trap: { i: 2, t: "\\sum_{i=1}^{n}Z_{i}" },
+    hook: "n 个标准正态的平方和，自由度是 n",
+    pitfall: "是平方和不是和；E=n，D=2n",
+    similar: "样本方差乘 (n-1)/σ² 服从 χ²(n-1)" },
+
+  { id: "t_dist", name: "t 分布", module: "概率", chapter: "抽样分布", tags: ["数一"],
+    chunks: ["T", "=", "\\frac{X}{\\sqrt{Y/n}}", "\\sim", "t(n)"], cond: "X\\sim N(0,1),\\, Y\\sim\\chi^{2}(n)",
+    trap: { i: 2, t: "\\frac{X}{Y/n}" },
+    hook: "标准正态除以卡方除以自由度的根号",
+    pitfall: "根号只在分母的 Y/n 上；n→∞ 时趋近标准正态",
+    similar: "F 分布是两个卡方之比的变形" },
+
+  { id: "F_dist", name: "F 分布", module: "概率", chapter: "抽样分布", tags: ["数一"],
+    chunks: ["F", "=", "\\frac{X/n_{1}}{Y/n_{2}}", "\\sim", "F(n_{1},n_{2})"],
+    trap: { i: 2, t: "\\frac{X/n_{2}}{Y/n_{1}}" },
+    hook: "两个卡方各除自由度，再相除",
+    pitfall: "分子分母的自由度顺序不能反",
+    similar: "1/F ~ F(n₂,n₁)" },
+
+  { id: "moment", name: "矩估计", module: "概率", chapter: "参数估计", tags: ["数一", "数三"],
+    chunks: ["E(X)", "=", "\\overline{X}"],
+    trap: { i: 2, t: "X" },
+    hook: "令总体矩等于样本矩，解出参数",
+    pitfall: "有几个参数就列几个矩方程",
+    similar: "最大似然是另一套思路：让观测到的样本最可能出现" },
+
+  { id: "mle", name: "最大似然估计", module: "概率", chapter: "参数估计", tags: ["数一", "数三"],
+    chunks: ["L(\\theta)", "=", "\\prod_{i=1}^{n}f(x_{i};\\theta)", ",", "\\frac{d\\ln L}{d\\theta}=0"],
+    trap: { i: 2, t: "\\sum_{i=1}^{n}f(x_{i};\\theta)" },
+    hook: "似然是连乘，取对数变成连加再求导",
+    pitfall: "连乘不是连加；边界上的极值要单独看",
+    similar: "矩估计只看一阶矩，似然用全部分布信息" },
+
+  { id: "unbiased", name: "无偏估计", module: "概率", chapter: "参数估计", tags: ["数一", "数三"],
+    chunks: ["E(\\hat{\\theta})", "=", "\\theta"],
+    trap: { i: 0, t: "\\hat{\\theta}" },
+    hook: "估计量的期望等于真值",
+    pitfall: "=θ 是无偏，<θ 是有偏（低估）",
+    similar: "有效估计是方差更小的那个无偏估计" },
+
+  { id: "sample_var", name: "样本方差的无偏性", module: "概率", chapter: "参数估计", tags: ["数一", "数三"],
+    chunks: ["S^{2}", "=", "\\frac{1}{n-1}\\sum_{i=1}^{n}(X_{i}-\\overline{X})^{2}", ",", "E(S^{2})=\\sigma^{2}"],
+    trap: { i: 2, t: "\\frac{1}{n}\\sum_{i=1}^{n}(X_{i}-\\overline{X})^{2}" },
+    hook: "分母是 n-1，自由度少了一个",
+    pitfall: "除以 n 是有偏的，这就是 n-1 的来源",
+    similar: "样本均值 E(X̄)=μ 是无偏的" },
+
+  /* ================= 扩充 ================= */
+{ id: "eq_arcsin", name: "等价无穷小：arcsin x", module: "高数", chapter: "极限", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\arcsin x", "\\sim", "x"], cond: "x\\to 0",
+    trap: { i: 2, t: "\\sin x" },
+    hook: "反正弦和正弦在 0 附近一个样，都约等于 x",
+    pitfall: "别写成 sin x——两者值不同但都 ~ x，替换时不影响极限",
+    similar: "\\arctan x\\sim x 也成立，四个反三角里只有 arccos、arccot 不趋于 0" },
+
+  { id: "eq_tanx", name: "等价无穷小：tan x", module: "高数", chapter: "极限", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\tan x", "\\sim", "x"], cond: "x\\to 0",
+    trap: { i: 0, t: "\\sin x" },
+    hook: "正切在 0 附近也线性，和 x 同阶",
+    pitfall: "tan x - x 才是三次项，不能整体替换后在加减里乱用",
+    similar: "tan x - sin x ~ x³/2，用等价算出这个结果最稳" },
+
+  { id: "eq_axm1", name: "等价无穷小：a^x-1", module: "高数", chapter: "极限", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["a^{x}", "-", "1", "\\sim", "x\\ln a"], cond: "x\\to 0",
+    trap: { i: 4, t: "x" },
+    hook: "指数减一，等价于 x 乘上 ln 底数",
+    pitfall: "漏 ln a；a=e 时 ln e=1 才简写成 x",
+    similar: "\\ln(1+x)\\sim x 是它的倒数版，别把 ln a 忘在分子" },
+
+  { id: "eq_loga1", name: "等价无穷小：log_a(1+x)", module: "高数", chapter: "极限", tags: ["数一", "数二", "数三"],
+    chunks: ["\\log_{a}(1+x)", "\\sim", "\\frac{x}{\\ln a}"], cond: "x\\to 0",
+    trap: { i: 2, t: "x\\ln a" },
+    hook: "对数换底，ln a 在分母",
+    pitfall: "ln a 的位置：分子 x、分母 ln a，反了就是 a^x-1 的写法",
+    similar: "a^{x}-1\\sim x\\ln a 是同一个式子的两种方向" },
+
+  { id: "eq_root", name: "等价无穷小：√(1+x)-1", module: "高数", chapter: "极限", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\sqrt{1+x}", "-", "1", "\\sim", "\\frac{x}{2}"], cond: "x\\to 0",
+    trap: { i: 4, t: "x" },
+    hook: "开方是 1/2 次方，系数就是 1/2",
+    pitfall: "漏掉 1/2；写成 x 会让答案差一倍",
+    similar: "\\sqrt[3]{1+x}-1\\sim \\frac{x}{3}，系数就是根指数分之一" },
+
+  { id: "eq_cube", name: "等价无穷小：立方根", module: "高数", chapter: "极限", tags: ["数一", "数二", "数三"],
+    chunks: ["(1+x)^{\\frac{1}{3}}", "-", "1", "\\sim", "\\frac{x}{3}"], cond: "x\\to 0",
+    trap: { i: 4, t: "\\frac{x}{2}" },
+    hook: "三次根号减一，等价于 x/3",
+    pitfall: "系数是 1/3，别和平方根的 1/2 混",
+    similar: "(1+x)^{a}-1\\sim ax，取 a=1/3 就是这一条" },
+
+  { id: "eq_sinx3", name: "等价无穷小：sin x - x", module: "高数", chapter: "极限", tags: ["数一", "数二", "数三"],
+    chunks: ["\\sin x", "-", "x", "\\sim", "-\\frac{x^{3}}{6}"], cond: "x\\to 0",
+    trap: { i: 4, t: "-\\frac{x^{2}}{2}" },
+    hook: "一阶抵消后剩三次项，符号是负的",
+    pitfall: "系数是 1/6 且带负号；写成 -x²/2 是 1-cos 的错法",
+    similar: "\\arcsin x-x\\sim \\frac{x^{3}}{6}，两者符号相反" },
+
+  { id: "eq_arcsin3", name: "等价无穷小：arcsin x - x", module: "高数", chapter: "极限", tags: ["数一", "数二", "数三"],
+    chunks: ["\\arcsin x", "-", "x", "\\sim", "\\frac{x^{3}}{6}"], cond: "x\\to 0",
+    trap: { i: 4, t: "-\\frac{x^{3}}{6}" },
+    hook: "反正弦比 x 略大，所以是正的三次项",
+    pitfall: "符号和 sin x - x 相反，别记混",
+    similar: "\\tan x-x\\sim \\frac{x^{3}}{3}，系数比它大一倍" },
+
+  { id: "d_sec", name: "正割求导", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三"],
+    chunks: ["(\\sec x)'", "=", "\\sec x", "\\tan x"],
+    trap: { i: 3, t: "\\cot x" },
+    hook: "正割求导＝正割乘正切",
+    pitfall: "是乘积不是平方；sec 和 tan 搭档",
+    similar: "(\\csc x)'=-\\csc x\\cot x，搭档换成 csc 和 cot，且带负号" },
+
+  { id: "d_cot", name: "余切求导", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三"],
+    chunks: ["(\\cot x)'", "=", "-\\csc^{2}x"],
+    trap: { i: 2, t: "\\csc^{2}x" },
+    hook: "余切求导是负的余割平方",
+    pitfall: "负号和平方都不能丢",
+    similar: "(\\tan x)'=\\sec^{2}x，一个正一个负" },
+
+  { id: "d_csc", name: "余割求导", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三"],
+    chunks: ["(\\csc x)'", "=", "-\\csc x", "\\cot x"],
+    trap: { i: 2, t: "\\csc x" },
+    hook: "余割求导＝负余割乘余切",
+    pitfall: "负号最容易漏",
+    similar: "(\\sec x)'=\\sec x\\tan x，搭档不同、符号也不同" },
+
+  { id: "d_arccos", name: "反余弦求导", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三"],
+    chunks: ["(\\arccos x)'", "=", "-\\frac{1}{\\sqrt{1-x^{2}}}"],
+    trap: { i: 2, t: "\\frac{1}{\\sqrt{1-x^{2}}}" },
+    hook: "和反正弦只差一个负号",
+    pitfall: "漏负号；分母根号里是 1-x²",
+    similar: "(\\arcsin x)'=\\frac{1}{\\sqrt{1-x^{2}}}，正负相对" },
+
+  { id: "d_arccot", name: "反余切求导", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三"],
+    chunks: ["(\\arccot x)'", "=", "-\\frac{1}{1+x^{2}}"],
+    trap: { i: 2, t: "\\frac{1}{1+x^{2}}" },
+    hook: "和反正切只差一个负号",
+    pitfall: "分母是 1+x²，没有根号",
+    similar: "(\\arctan x)'=\\frac{1}{1+x^{2}}" },
+
+  { id: "d_loga", name: "一般对数求导", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["(\\log_{a}x)'", "=", "\\frac{1}{x\\ln a}"],
+    trap: { i: 2, t: "\\frac{\\ln a}{x}" },
+    hook: "和 ln x 只差分母里多一个 ln a",
+    pitfall: "ln a 在分母不在分子；a=e 时才是 1/x",
+    similar: "(a^{x})'=a^{x}\\ln a，ln a 一个在分母一个在分子" },
+
+  { id: "d_nsin", name: "正弦的 n 阶导数", module: "高数", chapter: "导数", tags: ["数一", "数二", "数三"],
+    chunks: ["(\\sin x)^{(n)}", "=", "\\sin", "\\left(x+\\frac{n\\pi}{2}\\right)"],
+    trap: { i: 3, t: "\\left(x+n\\pi\\right)" },
+    hook: "每求一次导相位前进 π/2",
+    pitfall: "是 nπ/2 不是 nπ；cos 版本要再往前半步",
+    similar: "(\\cos x)^{(n)}=\\cos\\left(x+\\frac{n\\pi}{2}\\right)，和 sin 完全同形" },
+
+  { id: "int_tan", name: "正切积分", module: "高数", chapter: "积分", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\int", "\\tan x", "dx", "=", "-\\ln|\\cos x|", "+", "C"],
+    trap: { i: 4, t: "\\ln|\\cos x|" },
+    hook: "tan 积出来是负的对数余弦",
+    pitfall: "负号；也可以写成 ln|sec x|，两者相等",
+    similar: "\\int\\cot x\\,dx=\\ln|\\sin x|+C，一个负一个正" },
+
+  { id: "int_sec", name: "正割积分", module: "高数", chapter: "积分", tags: ["数一", "数二", "数三"],
+    chunks: ["\\int", "\\sec x", "dx", "=", "\\ln|\\sec x+\\tan x|", "+", "C"],
+    trap: { i: 4, t: "\\ln|\\sec x-\\tan x|" },
+    hook: "sec 加 tan 取对数，中间是加号",
+    pitfall: "里面是 sec+tan，不是 sec-tan（那是 csc 的形态）",
+    similar: "\\int\\csc x\\,dx=\\ln|\\csc x-\\cot x|+C，中间是减号" },
+
+  { id: "int_ax", name: "指数函数积分", module: "高数", chapter: "积分", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\int", "a^{x}", "dx", "=", "\\frac{a^{x}}{\\ln a}", "+", "C"],
+    trap: { i: 4, t: "a^{x}\\ln a" },
+    hook: "求导时乘 ln a，积分时就除 ln a",
+    pitfall: "ln a 在分母；a=e 时才是 e^x",
+    similar: "(a^{x})'=a^{x}\\ln a，一个乘一个除" },
+
+  { id: "int_ln", name: "对数积分", module: "高数", chapter: "积分", tags: ["数一", "数二", "数三"],
+    chunks: ["\\int", "\\ln x\\,dx", "=", "x\\ln x", "-", "x", "+", "C"],
+    trap: { i: 3, t: "x\\ln x+x" },
+    hook: "x ln x 减 x，分部积分推出来的",
+    pitfall: "减号不能少；只写 x ln x 是错的",
+    similar: "\\int x\\ln x\\,dx=\\frac{x^{2}}{2}\\ln x-\\frac{x^{2}}{4}+C" },
+
+  { id: "int_asin", name: "反正弦型积分", module: "高数", chapter: "积分", tags: ["数一", "数二", "数三"],
+    chunks: ["\\int", "\\frac{dx}{\\sqrt{a^{2}-x^{2}}}", "=", "\\arcsin\\frac{x}{a}", "+", "C"],
+    trap: { i: 3, t: "\\arcsin x" },
+    hook: "分母是 a²-x² 开根号，直接给 arcsin(x/a)",
+    pitfall: "别忘分母里的 a；结果是 arcsin(x/a) 不是 arcsin x",
+    similar: "\\int\\frac{dx}{a^{2}+x^{2}}=\\frac{1}{a}\\arctan\\frac{x}{a}+C" },
+
+  { id: "int_a2x2", name: "反正切型积分", module: "高数", chapter: "积分", tags: ["数一", "数二", "数三"],
+    chunks: ["\\int", "\\frac{dx}{a^{2}+x^{2}}", "=", "\\frac{1}{a}", "\\arctan\\frac{x}{a}", "+", "C"],
+    trap: { i: 3, t: "a" },
+    hook: "反正切配 1/a 的系数",
+    pitfall: "前面的 1/a 容易丢；a=1 时才没有",
+    similar: "\\int\\frac{dx}{\\sqrt{a^{2}-x^{2}}}=\\arcsin\\frac{x}{a}+C，一个有根号一个没有" },
+
+  { id: "int_sqrt_a2x2", name: "根号 a²-x² 的积分", module: "高数", chapter: "积分", tags: ["数一", "数二", "数三"],
+    chunks: ["\\int", "\\sqrt{a^{2}-x^{2}}\\,dx", "=", "\\frac{x}{2}\\sqrt{a^{2}-x^{2}}", "+", "\\frac{a^{2}}{2}\\arcsin\\frac{x}{a}", "+", "C"],
+    trap: { i: 5, t: "\\frac{a^{2}}{2}\\arccos\\frac{x}{a}" },
+    hook: "圆的面积切一块，最后要补 arcsin 项",
+    pitfall: "两项都不能少；第二项系数是 a²/2",
+    similar: "\\int\\sqrt{a^{2}+x^{2}}\\,dx 会得到 ln 型，不是 arcsin" },
+
+  { id: "wallis", name: "华里士公式（点火公式）", module: "高数", chapter: "积分", tags: ["数一", "数三"],
+    chunks: ["\\int_{0}^{\\frac{\\pi}{2}}\\sin^{n}x\\,dx", "=", "\\begin{cases}\\frac{(n-1)!!}{n!!}\\cdot\\frac{\\pi}{2}, & n\\text{ 为偶数}\\\\ \\frac{(n-1)!!}{n!!}, & n\\text{ 为奇数}\\end{cases}"],
+    trap: { i: 2, t: "\\begin{cases}\\frac{n!!}{(n-1)!!}\\cdot\\frac{\\pi}{2}, & n\\text{ 为偶数}\\\\ \\frac{n!!}{(n-1)!!}, & n\\text{ 为奇数}\\end{cases}" },
+    hook: "偶数分到 π/2，奇数没有 π",
+    pitfall: "偶奇分配反了；只有偶数才乘 π/2",
+    similar: "cos 的 n 次方在 0 到 π/2 上结果完全一样" },
+
+  { id: "side_area", name: "旋转曲面侧面积", module: "高数", chapter: "积分", tags: ["数一", "数二", "数三"],
+    chunks: ["S", "=", "2\\pi", "\\int_{a}^{b}", "|y|", "\\sqrt{1+y'^{2}}", "dx"],
+    trap: { i: 5, t: "\\sqrt{1+y^{2}}" },
+    hook: "弧长元乘上 2πy，就是旋转一圈的表面积",
+    pitfall: "根号里是 1+(y')²，不是 1+y²；漏 2π 就是弧长",
+    similar: "旋转体体积 V=\\pi\\int y^{2}dx，一个带根号一个不带" },
+
+  { id: "centroid", name: "平面薄片的形心", module: "高数", chapter: "二重积分", tags: ["数一", "数二", "数三"],
+    chunks: ["\\bar{x}", "=", "\\frac{\\iint_{D}x\\,d\\sigma}{\\iint_{D}d\\sigma}"],
+    trap: { i: 2, t: "\\frac{\\iint_{D}d\\sigma}{\\iint_{D}x\\,d\\sigma}" },
+    hook: "分子是 x 的一阶矩，分母是面积",
+    pitfall: "分子分母写反；均匀薄片形心＝几何中心",
+    similar: "\\bar{y}=\\frac{\\iint_{D}y\\,d\\sigma}{\\iint_{D}d\\sigma}，把 x 换成 y" },
+
+  { id: "tangent_plane", name: "曲面切平面", module: "高数", chapter: "多元微分", tags: ["数一", "数二", "数三"],
+    chunks: ["z-z_{0}", "=", "f_{x}(x_{0},y_{0})", "(x-x_{0})", "+", "f_{y}(x_{0},y_{0})", "(y-y_{0})"],
+    trap: { i: 3, t: "(x+x_{0})" },
+    hook: "把全微分写成平面方程，就是切平面",
+    pitfall: "是 (x-x0) 不是 (x+x0)；两项都要用偏导在 (x0,y0) 的值",
+    similar: "法线方向取 (f_x,f_y,-1)，和切平面法向量一致" },
+
+  { id: "div", name: "散度", module: "高数", chapter: "多元微分", tags: ["数一"],
+    chunks: ["\\mathrm{div}", "\\mathbf{F}", "=", "\\frac{\\partial P}{\\partial x}", "+", "\\frac{\\partial Q}{\\partial y}", "+", "\\frac{\\partial R}{\\partial z}"],
+    trap: { i: 4, t: "\\frac{\\partial^2 P}{\\partial x^2}" },
+    hook: "散度＝三个分量各自对自己变量求偏导再相加",
+    pitfall: "是三个一阶偏导相加，不是二阶",
+    similar: "旋度是叉积式的组合，散度是点积式的相加" },
+
+  { id: "curl", name: "旋度", module: "高数", chapter: "多元微分", tags: ["数一"],
+    chunks: ["\\mathrm{rot}\\,\\mathbf{F}", "=", "\\left(\\frac{\\partial R}{\\partial y}-\\frac{\\partial Q}{\\partial z},\\,\\frac{\\partial P}{\\partial z}-\\frac{\\partial R}{\\partial x},\\,\\frac{\\partial Q}{\\partial x}-\\frac{\\partial P}{\\partial y}\\right)"],
+    trap: { i: 2, t: "\\left(\\frac{\\partial Q}{\\partial z}-\\frac{\\partial R}{\\partial y},\\,\\frac{\\partial R}{\\partial x}-\\frac{\\partial P}{\\partial z},\\,\\frac{\\partial P}{\\partial y}-\\frac{\\partial Q}{\\partial x}\\right)" },
+    hook: "按 x→y→z 的顺序转圈做差，顺时针方向对应减去",
+    pitfall: "三个分量顺序和减号方向最容易写反",
+    similar: "散度是标量，旋度是向量；无旋场的旋度为零" },
+
+  { id: "fourier_coef", name: "傅里叶系数", module: "高数", chapter: "级数", tags: ["数一"],
+    chunks: ["a_{n}", "=", "\\frac{1}{\\pi}", "\\int_{-\\pi}^{\\pi}", "f(x)\\cos nx", "dx"],
+    trap: { i: 2, t: "\\frac{2}{\\pi}" },
+    hook: "系数前面是 1/π，周期 2π 的标配",
+    pitfall: "1/π 不是 2/π；a0 才是 1/π 加倍",
+    similar: "b_{n}=\\frac{1}{\\pi}\\int_{-\\pi}^{\\pi}f(x)\\sin nx\\,dx，换个三角函数" },
+
+  { id: "series_leibniz", name: "莱布尼茨判别法", module: "高数", chapter: "级数", tags: ["数一", "数三"],
+    chunks: ["\\sum_{n=1}^{\\infty}", "(-1)^{n-1}u_{n}", "\\text{ 收敛}", "\\Leftarrow", "u_{n}\\downarrow 0"],
+    trap: { i: 3, t: "\\Rightarrow" },
+    hook: "交错级数：单调递减且趋于 0，就一定收敛",
+    pitfall: "是「若…则…」（⇐），反过来不成立",
+    similar: "绝对收敛比条件收敛强：\\sum|u_n| 收敛则 \\sum u_n 必收敛" },
+
+  { id: "series_ratio", name: "比值判别法", module: "高数", chapter: "级数", tags: ["数一", "数三"],
+    chunks: ["\\lim_{n\\to\\infty}", "\\frac{u_{n+1}}{u_{n}}", "=", "\\rho", "\\Rightarrow", "\\rho<1\\text{ 收敛}"],
+    trap: { i: 1, t: "\\frac{u_{n}}{u_{n+1}}" },
+    hook: "后项比前项，小于 1 收敛",
+    pitfall: "分子是后项 u_{n+1}；比值等于 1 时失效，得换别的法",
+    similar: "根值判别法 \\lim\\sqrt[n]{u_n}=\\rho，适用 n 次方形态" },
+
+  { id: "series_abs", name: "绝对收敛的蕴含关系", module: "高数", chapter: "级数", tags: ["数一", "数三"],
+    chunks: ["\\sum", "|u_{n}|", "\\text{ 收敛}", "\\Rightarrow", "\\sum", "u_{n}", "\\text{ 收敛}"],
+    trap: { i: 3, t: "\\Leftarrow" },
+    hook: "绝对收敛一定收敛，反之不一定",
+    pitfall: "方向别写反；\\sum(-1)^n/n 收敛但不绝对收敛",
+    similar: "条件收敛的定义就是「收敛但不绝对收敛」" },
+
+  { id: "green_area", name: "格林公式求面积", module: "高数", chapter: "曲线积分", tags: ["数一"],
+    chunks: ["A", "=", "\\frac{1}{2}", "\\oint_{L}", "x\\,dy-y\\,dx"],
+    trap: { i: 4, t: "x\\,dy+y\\,dx" },
+    hook: "面积＝半个环路积分，两个微分项相减",
+    pitfall: "是减号；前面别忘 1/2",
+    similar: "\\oint Pdx+Qdy=\\iint(\\frac{\\partial Q}{\\partial x}-\\frac{\\partial P}{\\partial y})dxdy，取 P=-y/2,Q=x/2 就得这一条" },
+
+  { id: "triple_volume", name: "三重积分求体积", module: "高数", chapter: "三重积分", tags: ["数一"],
+    chunks: ["V", "=", "\\iiint_{\\Omega}", "dV"],
+    trap: { i: 3, t: "d\\sigma" },
+    hook: "对 1 做三重积分就是体积",
+    pitfall: "dV 不是 dσ（那是二重积分的面积元）",
+    similar: "二重积分 \\iint_D d\\sigma 求的是面积" },
+
+  { id: "dbl_sym", name: "二重积分的对称性", module: "高数", chapter: "二重积分", tags: ["数一", "数二", "数三"],
+    chunks: ["\\iint_{D}", "f(x,y)\\,d\\sigma", "=", "0", "\\Leftarrow", "f(-x,y)=-f(x,y)"],
+    trap: { i: 5, t: "f(-x,y)=f(x,y)" },
+    hook: "关于 y 轴对称时，x 的奇函数积分为零",
+    pitfall: "对称+奇函数才是 0；偶函数则是两倍半区",
+    similar: "偶函数：\\iint_D f=2\\iint_{D_{x>0}}f，别把 0 和 2 倍搞混" },
+
+  { id: "grad_prop", name: "方向导数与梯度的关系", module: "高数", chapter: "多元微分", tags: ["数一"],
+    chunks: ["\\frac{\\partial f}{\\partial l}", "=", "\\mathrm{grad}f", "\\cdot", "\\mathbf{e}_{l}"],
+    trap: { i: 4, t: "\\mathbf{e}_{l}^{2}" },
+    hook: "方向导数＝梯度在方向上的投影，长度是 1 才直接用",
+    pitfall: "方向向量必须先单位化，否则差一个模长",
+    similar: "梯度的模就是最大方向导数，方向沿梯度" },
+
+  /* ================= 扩充 ================= */
+{ id: "det_block", name: "分块三角行列式", module: "线代", chapter: "行列式", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\begin{vmatrix}A & 0\\\\ 0 & B\\end{vmatrix}", "=", "|A|", "\\cdot", "|B|"],
+    trap: { i: 3, t: "+" },
+    hook: "分块对角：行列式相乘，不是相加",
+    pitfall: "是乘积；上三角分块同理，下三角也成立",
+    similar: "\\begin{vmatrix}0 & A\\\\ B & 0\\end{vmatrix}=(-1)^{mn}|A||B|，副对角多一个符号" },
+
+  { id: "det_elem", name: "行列式的初等变换", module: "线代", chapter: "行列式", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["|A|", "\\xrightarrow{r_{i}+kr_{j}}", "|A|"],
+    trap: { i: 1, t: "\\xrightarrow{r_{i}\\leftrightarrow r_{j}}" },
+    hook: "倍加不变号，换行要变号，倍乘要提出来",
+    pitfall: "只有「倍加」不改变行列式；换行变号、某行乘 k 则提 k",
+    similar: "|kA|=k^{n}|A|，整矩阵乘 k 是 n 次方" },
+
+  { id: "det_mul_row", name: "行列式某一行乘 k", module: "线代", chapter: "行列式", tags: ["数一", "数二", "数三"],
+    chunks: ["|\\cdots, k\\alpha_{i}, \\cdots|", "=", "k", "|\\cdots, \\alpha_{i}, \\cdots|"],
+    trap: { i: 2, t: "k^{n}" },
+    hook: "只乘一行就提一个 k，乘整个矩阵才提 k^n",
+    pitfall: "混淆 |kA|=k^n|A| 与单行乘 k 只提一次",
+    similar: "|kA|=k^{n}|A|，n 是阶数" },
+
+  { id: "rank_def", name: "矩阵秩的定义", module: "线代", chapter: "矩阵", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["r(A)", "=", "\\text{最高阶非零子式的阶数}", "=", "\\text{行阶梯形非零行数}"],
+    trap: { i: 4, t: "\\text{行阶梯形总行数}" },
+    hook: "秩＝最大非零子式的阶数，也是最简阶梯的非零行数",
+    pitfall: "数的是非零行，不是总行数",
+    similar: "r(A)=r(A^{T})，行秩等于列秩" },
+
+  { id: "rank_null", name: "秩-零化度定理", module: "线代", chapter: "方程组", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["r(A)", "+", "\\dim N(A)", "=", "n"],
+    trap: { i: 4, t: "m" },
+    hook: "秩加上零空间维数，等于未知数个数 n",
+    pitfall: "是 n（列数）不是 m（行数）",
+    similar: "齐次方程 Ax=0 的基础解系恰好有 n-r(A) 个向量" },
+
+  { id: "rank_full", name: "满秩的等价条件", module: "线代", chapter: "矩阵", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["r(A)=n", "\\Leftrightarrow", "|A|\\neq 0", "\\Leftrightarrow", "A\\text{ 可逆}"],
+    trap: { i: 2, t: "|A|=0" },
+    hook: "满秩、行列式非零、可逆，三件事说的是同一件事",
+    pitfall: "|A|≠0 才可逆；=0 是降秩",
+    similar: "齐次方程 Ax=0 只有零解 ⇔ r(A)=n ⇔ A 可逆" },
+
+  { id: "eig_polynomial", name: "特征方程", module: "线代", chapter: "特征值", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["|\\lambda E-A|", "=", "0"],
+    trap: { i: 0, t: "|A-\\lambda E|" },
+    hook: "λE 减 A 的行列式等于零",
+    pitfall: "两种写法等价（差 (-1)^n 因子），但别写成 |A-λ|",
+    similar: "特征向量满足 (\\lambda E-A)x=0，求基础解系" },
+
+  { id: "eig_similar", name: "相似矩阵的性质", module: "线代", chapter: "特征值", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["A\\sim B", "\\Rightarrow", "\\lambda_{A}=\\lambda_{B}", ",\\,", "r(A)=r(B)"],
+    trap: { i: 2, t: "A=B" },
+    hook: "相似只保特征值、秩、迹、行列式，不保元素",
+    pitfall: "相似不等于相等；反过来特征值相同也未必相似",
+    similar: "合同的矩阵秩相同，但特征值不一定相同" },
+
+  { id: "eig_spectrum", name: "A 与 A⁻¹、A* 的特征值", module: "线代", chapter: "特征值", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\lambda_{A^{-1}}", "=", "\\frac{1}{\\lambda}", ",\\quad", "\\lambda_{A^{*}}", "=", "\\frac{|A|}{\\lambda}"],
+    trap: { i: 6, t: "\\frac{\\lambda}{|A|}" },
+    hook: "逆矩阵倒数，伴随矩阵是 |A| 除以 λ",
+    pitfall: "两个式子容易互换；伴随的特征值分子是 |A|",
+    similar: "A^{2} 的特征值是 \\lambda^{2}，A+kE 的是 \\lambda+k" },
+
+  { id: "ortho_mat", name: "正交矩阵", module: "线代", chapter: "特征值", tags: ["数一", "数二", "数三"],
+    chunks: ["A^{T}A", "=", "E", "\\Leftrightarrow", "A^{-1}=A^{T}"],
+    trap: { i: 4, t: "A^{-1}=-A^{T}" },
+    hook: "转置就是逆，行列式为 ±1",
+    pitfall: "不是 -A^T；行列式只能 ±1，不能是别的",
+    similar: "正交变换保持内积和长度不变" },
+
+  { id: "congruence", name: "矩阵合同", module: "线代", chapter: "二次型", tags: ["数一", "数二", "数三"],
+    chunks: ["C^{T}AC", "=", "B", ",\\quad", "|C|\\neq 0"],
+    trap: { i: 0, t: "C^{-1}AC" },
+    hook: "合同是 C^T A C，相似是 C^{-1} A C",
+    pitfall: "合同用转置、相似用逆；实对称矩阵合同等价于正负惯性指数相同",
+    similar: "相似保特征值，合同保惯性指数" },
+
+  { id: "inertia", name: "惯性定理", module: "线代", chapter: "二次型", tags: ["数一", "数二", "数三"],
+    chunks: ["p", "+", "q", "=", "r", ",\\quad", "p-q=\\text{符号差}"],
+    trap: { i: 4, t: "n" },
+    hook: "正惯性指数加负惯性指数等于秩",
+    pitfall: "p+q=r 不是 p+q=n；零特征值不算进去",
+    similar: "正定的充要条件是 p=n，也就是 p=r=n" },
+
+  { id: "equiv_form", name: "等价标准形", module: "线代", chapter: "矩阵", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["A", "\\sim", "\\begin{pmatrix}E_{r} & 0\\\\ 0 & 0\\end{pmatrix}"],
+    trap: { i: 2, t: "\\begin{pmatrix}E_{n} & 0\\\\ 0 & 0\\end{pmatrix}" },
+    hook: "任何矩阵都等价于左上角单位块、其余为零",
+    pitfall: "单位块是 r 阶（秩），不是 n 阶",
+    similar: "相似标准形是对角阵 \\Lambda，只对可对角化的矩阵存在" },
+
+  { id: "homog_basis", name: "齐次方程基础解系", module: "线代", chapter: "方程组", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\text{解空间维数}", "=", "n-r(A)"],
+    trap: { i: 2, t: "r(A)" },
+    hook: "自由变量个数就是 n 减秩",
+    pitfall: "是 n 减 r，别写成 r；n 为未知数个数",
+    similar: "非齐次方程有解的条件是 r(A)=r(A|b)" },
+
+  { id: "nonhomog_struct", name: "非齐次方程解的结构", module: "线代", chapter: "方程组", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["x", "=", "\\eta", "+", "\\sum", "c_{i}\\xi_{i}"],
+    trap: { i: 3, t: "-" },
+    hook: "特解加齐次通解，缺一不可",
+    pitfall: "是加号；只写特解会漏掉全部齐次解",
+    similar: "Ax=b 有两个不同解时，它们的差是 Ax=0 的解" },
+
+  { id: "cramer", name: "克莱姆法则", module: "线代", chapter: "方程组", tags: ["数一", "数二", "数三"],
+    chunks: ["x_{j}", "=", "\\frac{|A_{j}|}{|A|}", ",\\quad", "|A|\\neq 0"],
+    trap: { i: 2, t: "\\frac{|A|}{|A_{j}|}" },
+    hook: "把第 j 列换成 b，行列式相除",
+    pitfall: "分子分母写反；只适用于方程个数等于未知数且 |A|≠0",
+    similar: "|A|=0 时不能用克莱姆，要回到秩和基础解系" },
+
+  { id: "vec_rank", name: "向量组的秩与极大无关组", module: "线代", chapter: "向量", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\text{秩}", "=", "\\text{极大无关组所含向量个数}", "=", "r(\\alpha_{1},\\cdots,\\alpha_{s})"],
+    trap: { i: 2, t: "\\text{向量组中向量总数}" },
+    hook: "秩是极大无关组的规模，不是向量总数",
+    pitfall: "个数不是总数；向量组线性相关 ⇔ 秩小于个数",
+    similar: "r(\\alpha_{1},\\cdots,\\alpha_{s}) 等于矩阵的列秩" },
+
+  { id: "trace_prop", name: "迹的性质", module: "线代", chapter: "特征值", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["\\mathrm{tr}(A)", "=", "\\sum", "\\lambda_{i}", "=", "\\sum", "a_{ii}"],
+    trap: { i: 6, t: "a_{11}" },
+    hook: "迹＝特征值之和＝主对角线之和",
+    pitfall: "是全部对角元相加，不是只看 a11；乘积才是行列式",
+    similar: "|A|=\\prod\\lambda_{i}，一条加法一条乘法" },
+
+  /* ================= 扩充 ================= */
+{ id: "p_add", name: "概率加法公式", module: "概率", chapter: "概率计算", tags: ["数一", "数三", "396"],
+    chunks: ["P(A\\cup B)", "=", "P(A)", "+", "P(B)", "-", "P(AB)"],
+    trap: { i: 5, t: "+" },
+    hook: "并集要把重复算的那一块减掉",
+    pitfall: "最后一项是减 P(AB)，写成加就把交集算了两遍",
+    similar: "P(A\\cup B\\cup C) 要减三个两两交集再加三交" },
+
+  { id: "p_diff", name: "差事件的概率", module: "概率", chapter: "概率计算", tags: ["数一", "数三", "396"],
+    chunks: ["P(A-B)", "=", "P(A)", "-", "P(AB)"],
+    trap: { i: 4, t: "P(B)" },
+    hook: "A 减去和 B 重叠的部分才是 A-B",
+    pitfall: "减的是 P(AB) 不是 P(B)；只有 B⊂A 时才等于 P(A)-P(B)",
+    similar: "P(A-B)=P(A\\bar{B})，两种写法一回事" },
+
+  { id: "p_comp", name: "对立事件", module: "概率", chapter: "概率计算", tags: ["数一", "数三", "396"],
+    chunks: ["P(\\bar{A})", "=", "1", "-", "P(A)"],
+    trap: { i: 4, t: "P(\\bar{A})" },
+    hook: "正难则反，一半的题靠这一条",
+    pitfall: "是 1 减，不是 0 减；互斥和对立也不是一回事",
+    similar: "P(A-B)=P(A)-P(AB)，注意区别" },
+
+  { id: "E_g", name: "期望的线性性质", module: "概率", chapter: "数字特征", tags: ["数一", "数三", "396"],
+    chunks: ["E(aX+bY)", "=", "aE(X)", "+", "bE(Y)"],
+    trap: { i: 3, t: "\\times" },
+    hook: "期望永远可以拆，不管独不独立",
+    pitfall: "这里不需要独立性；乘积的期望才需要",
+    similar: "D(aX+bY) 需要协方差项，比期望复杂得多" },
+
+  { id: "cov_prop", name: "协方差的性质", module: "概率", chapter: "数字特征", tags: ["数一", "数三"],
+    chunks: ["\\mathrm{Cov}(aX,bY)", "=", "ab", "\\mathrm{Cov}(X,Y)"],
+    trap: { i: 2, t: "a+b" },
+    hook: "系数提出来是相乘",
+    pitfall: "别写成 a+b；常数项的协方差为零",
+    similar: "D(X+Y)=D(X)+D(Y)+2\\mathrm{Cov}(X,Y)" },
+
+  { id: "rho_bound", name: "相关系数的取值范围", module: "概率", chapter: "数字特征", tags: ["数一", "数三"],
+    chunks: ["|\\rho_{XY}|", "\\le", "1"],
+    trap: { i: 1, t: "\\ge" },
+    hook: "相关系数被夹在 -1 和 1 之间",
+    pitfall: "ρ=±1 才是线性关系；ρ=0 只说明不线性相关",
+    similar: "\\rho_{XY}=\\frac{\\mathrm{Cov}(X,Y)}{\\sqrt{D(X)D(Y)}}，注意分母是标准差乘积" },
+
+  { id: "indep_uncorr", name: "独立与不相关", module: "概率", chapter: "数字特征", tags: ["数一", "数三"],
+    chunks: ["X,Y\\text{ 独立}", "\\Rightarrow", "\\rho_{XY}=0"],
+    trap: { i: 1, t: "\\Leftrightarrow" },
+    hook: "独立一定不相关，反过来不一定",
+    pitfall: "反例是二维正态以外的情形（如 X 与 X²）",
+    similar: "二维正态下独立 ⇔ 不相关，这是特例" },
+
+  { id: "chi2_add", name: "卡方分布的可加性", module: "概率", chapter: "抽样分布", tags: ["数一", "数三"],
+    chunks: ["\\chi^{2}(n_{1})", "+", "\\chi^{2}(n_{2})", "\\sim", "\\chi^{2}(n_{1}+n_{2})"],
+    trap: { i: 4, t: "\\chi^{2}(n_{1}n_{2})" },
+    hook: "自由度直接相加",
+    pitfall: "自由度相加，不是相乘；要求两者独立",
+    similar: "正态的可加性：X+Y\\sim N(\\mu_{1}+\\mu_{2},\\sigma_{1}^{2}+\\sigma_{2}^{2})" },
+
+  { id: "f_t_rel", name: "F 分布与 t 分布的关系", module: "概率", chapter: "抽样分布", tags: ["数一", "数三"],
+    chunks: ["t^{2}(n)", "\\sim", "F(1,n)"],
+    trap: { i: 2, t: "F(n,1)" },
+    hook: "t 的平方是自由度 1,n 的 F",
+    pitfall: "顺序是 (1,n) 不是 (n,1)",
+    similar: "\\frac{1}{t^{2}(n)}\\sim F(n,1)，倒数把自由度换过来" },
+
+  { id: "sample_mean", name: "样本均值", module: "概率", chapter: "抽样分布", tags: ["数一", "数三", "396"],
+    chunks: ["E(\\bar{X})", "=", "\\mu", ",\\quad", "D(\\bar{X})", "=", "\\frac{\\sigma^{2}}{n}"],
+    trap: { i: 6, t: "\\frac{\\sigma^{2}}{n^{2}}" },
+    hook: "均值无偏，方差缩小 n 倍",
+    pitfall: "是除以 n 不是 n²；这正是样本均值更稳的原因",
+    similar: "\\bar{X}\\sim N(\\mu,\\frac{\\sigma^{2}}{n})（正态总体下）" },
+
+  { id: "sample_chi2", name: "样本方差的分布", module: "概率", chapter: "抽样分布", tags: ["数一", "数三"],
+    chunks: ["\\frac{(n-1)S^{2}}{\\sigma^{2}}", "\\sim", "\\chi^{2}(n-1)"],
+    trap: { i: 2, t: "\\chi^{2}(n)" },
+    hook: "除以 n-1 才凑出卡方，自由度是 n-1",
+    pitfall: "自由度 n-1；用 n 会得到偏差的统计量",
+    similar: "S^{2} 与 \\bar{X} 相互独立，这是 t 分布推导的关键" },
+
+  { id: "cond_expect", name: "全期望公式", module: "概率", chapter: "数字特征", tags: ["数一", "数三"],
+    chunks: ["E(X)", "=", "E", "\\left[E(X\\mid Y)\\right]"],
+    trap: { i: 3, t: "E(X\\mid Y)" },
+    hook: "先对 Y 分层求期望，再对 Y 求一次期望",
+    pitfall: "外层还要再取一次 E，别停在条件期望",
+    similar: "全概率公式是它的概率版本：P(A)=E[P(A\\mid Y)]" },
+
+  { id: "joint_cdf", name: "联合分布函数", module: "概率", chapter: "多维随机变量", tags: ["数一", "数三"],
+    chunks: ["F(x,y)", "=", "P(X\\le x,\\,Y\\le y)"],
+    trap: { i: 2, t: "P(X\\le x\\ \\text{或}\\ Y\\le y)" },
+    hook: "两个条件同时成立，是「且」不是「或」",
+    pitfall: "是交集的概率；边缘分布 F_X(x)=F(x,+\\infty)",
+    similar: "f(x,y)=\\frac{\\partial^{2}F}{\\partial x\\partial y}，密度是二阶混合偏导" },
+
+  { id: "d_binom_md", name: "二项分布的均值方差", module: "概率", chapter: "常见分布", tags: ["数一", "数三", "396"],
+    chunks: ["E(X)", "=", "np", ",\\quad", "D(X)", "=", "np(1-p)"],
+    trap: { i: 6, t: "np" },
+    hook: "均值 np，方差 npq",
+    pitfall: "方差别漏 (1-p)；p=1 时方差为 0 正好检验",
+    similar: "0-1 分布是 n=1 的二项，均值 p 方差 p(1-p)" },
+
+  { id: "d_uniform_md", name: "均匀分布的均值方差", module: "概率", chapter: "常见分布", tags: ["数一", "数三", "396"],
+    chunks: ["E(X)", "=", "\\frac{a+b}{2}", ",\\quad", "D(X)", "=", "\\frac{(b-a)^{2}}{12}"],
+    trap: { i: 6, t: "\\frac{(b-a)^{2}}{2}" },
+    hook: "期望取中点，方差是长度平方除以 12",
+    pitfall: "分母是 12；写成 2 或 4 都错",
+    similar: "标准均匀 U(0,1)：均值 1/2，方差 1/12" },
+
+  { id: "d_exp_md", name: "指数分布的均值方差", module: "概率", chapter: "常见分布", tags: ["数一", "数三", "396"],
+    chunks: ["E(X)", "=", "\\frac{1}{\\lambda}", ",\\quad", "D(X)", "=", "\\frac{1}{\\lambda^{2}}"],
+    trap: { i: 6, t: "\\frac{1}{\\lambda}" },
+    hook: "均值和标准差都是 1/λ",
+    pitfall: "注意参数是 λ 还是 θ=1/λ，两种记法公式互换",
+    similar: "指数分布无记忆性：P(X>s+t\\mid X>s)=P(X>t)" },
+
+  { id: "d_normal_md", name: "正态分布的均值方差", module: "概率", chapter: "常见分布", tags: ["数一", "数三", "396"],
+    chunks: ["E(X)", "=", "\\mu", ",\\quad", "D(X)", "=", "\\sigma^{2}"],
+    trap: { i: 6, t: "\\sigma" },
+    hook: "第一个参数是均值，第二个是方差（不是标准差）",
+    pitfall: "N(μ,σ²) 里写的是方差；写成 σ 最经典的错",
+    similar: "标准正态 N(0,1) 的密度 \\varphi(x)=\\frac{1}{\\sqrt{2\\pi}}e^{-\\frac{x^{2}}{2}}" },
+
+  { id: "d_poisson_md", name: "泊松分布的均值方差", module: "概率", chapter: "常见分布", tags: ["数一", "数三", "396"],
+    chunks: ["E(X)", "=", "\\lambda", ",\\quad", "D(X)", "=", "\\lambda"],
+    trap: { i: 6, t: "\\lambda^{2}" },
+    hook: "均值和方差相等，都是 λ",
+    pitfall: "是 λ 不是 λ²；可以用这个特征反推 λ",
+    similar: "二项分布的方差 np(1-p) 永远小于均值 np" },
+
+  { id: "conf_int", name: "正态均值的置信区间", module: "概率", chapter: "统计推断", tags: ["数一", "数三"],
+    chunks: ["\\left(", "\\bar{x}-z_{\\frac{\\alpha}{2}}\\frac{\\sigma}{\\sqrt{n}}", ",\\ ", "\\bar{x}+z_{\\frac{\\alpha}{2}}\\frac{\\sigma}{\\sqrt{n}}", "\\right)"],
+    trap: { i: 1, t: "\\bar{x}-z_{\\alpha}\\frac{\\sigma}{n}" },
+    hook: "点估计 ± 分位数 × 标准误",
+    pitfall: "分位数是 z_{α/2}；分母是 √n；σ 未知时改用 t 分布",
+    similar: "样本量越大区间越窄，宽度按 1/\\sqrt{n} 收缩" },
+
+  { id: "hypo_two", name: "双侧检验的拒绝域", module: "概率", chapter: "统计推断", tags: ["数一", "数三"],
+    chunks: ["|z|", ">", "z_{\\frac{\\alpha}{2}}", "\\Rightarrow", "\\text{拒绝 } H_{0}"],
+    trap: { i: 2, t: "z_{\\alpha}" },
+    hook: "双侧各分 α/2，所以查 z_{α/2}",
+    pitfall: "写成 z_α 就是单侧；拒绝域和接受域互补",
+    similar: "单侧检验用 z_{\\alpha}，方向由备择假设定" }
+
+  ,
+  /* ================= 易混对比（专门治「记串了」） ================= */
+  { id: "dx_diff", name: "方差公式：D(X-Y)", module: "概率", chapter: "易混对比", tags: ["数一", "数三", "396"],
+    chunks: ["D(X-Y)", "=", "D(X)+D(Y)", "-", "2\\,\\mathrm{Cov}(X,Y)"],
+    trap: { i: 3, t: "+" },
+    hook: "(X−Y)² 展开会多出 −2XY，所以方差里是减号",
+    pitfall: "漏掉 −2Cov 是最常见的错；只有独立时才是 D(X)+D(Y)",
+    similar: "D(X+Y)=D(X)+D(Y)+2\\,\\mathrm{Cov}(X,Y)，加法那侧是加号" },
+
+  { id: "exy_indep", name: "独立性的推论：E(XY)", module: "概率", chapter: "易混对比", tags: ["数一", "数三", "396"],
+    chunks: ["X,Y \\text{ 独立}", "\\Rightarrow", "E(XY)", "=", "E(X)E(Y)"],
+    trap: { i: 4, t: "E(X)+E(Y)" },
+    hook: "独立能把乘积的期望拆成期望的乘积",
+    pitfall: "反过来不成立：E(XY)=E(X)E(Y) 只能推出不相关，推不出独立",
+    similar: "独立 ⇒ 不相关；不相关 ⇏ 独立" },
+
+  { id: "geom_md", name: "几何分布的期望方差", module: "概率", chapter: "易混对比", tags: ["数一", "数三", "396"],
+    chunks: ["E(X)", "=", "\\frac{1}{p}", "\\quad", "D(X)", "=", "\\frac{1-p}{p^{2}}"],
+    trap: { i: 6, t: "\\frac{1}{p^{2}}" },
+    hook: "几何分布：期望 1/p，方差 (1−p)/p²",
+    pitfall: "方差别顺手写成 1/p²，那是漏了 (1−p)；p=1 时方差必须是 0",
+    similar: "泊松 E=D=\\lambda；二项 E=np, D=np(1-p)" },
+
+  { id: "arrange_comb", name: "排列与组合：A 和 C", module: "概率", chapter: "易混对比", tags: ["数一", "数三", "396"],
+    chunks: ["A_{n}^{k}", "=", "\\frac{n!}{(n-k)!}", "\\quad", "C_{n}^{k}", "=", "\\frac{n!}{k!(n-k)!}"],
+    trap: { i: 6, t: "\\frac{n!}{(n-k)!}" },
+    hook: "排列只管顺序，组合在排列基础上再除以 k!",
+    pitfall: "组合漏除 k! 就变成了排列；A 与 C 只差一个 k!",
+    similar: "C_{n}^{k}=C_{n}^{n-k}，算组合时常用来化简" },
+
+  { id: "inv_trig_deriv", name: "反三角函数的导数：arcsin 与 arctan", module: "高数", chapter: "易混对比", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["(\\arcsin x)'", "=", "\\frac{1}{\\sqrt{1-x^{2}}}", "\\quad", "(\\arctan x)'", "=", "\\frac{1}{1+x^{2}}"],
+    trap: { i: 2, t: "\\frac{1}{1-x^{2}}" },
+    hook: "arcsin 带根号、分母是 1−x²；arctan 不带根号、分母是 1+x²",
+    pitfall: "arcsin 丢根号 + 把 1−x² 写成 1+x²，是最常见的双重错",
+    similar: "(\\sin x)'=\\cos x，(\\cos x)'=-\\sin x，符号别漏" },
+
+  { id: "similar_vs_congruent", name: "相似与合同：判据不同", module: "线代", chapter: "易混对比", tags: ["数一", "数三"],
+    chunks: ["A\\sim B", "\\Leftrightarrow", "\\text{特征值相同}", "\\quad", "A\\simeq B", "\\Leftrightarrow", "\\text{正负惯性指数相同}"],
+    trap: { i: 6, t: "\\text{特征值相同}" },
+    hook: "相似比特征值，合同比正负惯性指数",
+    pitfall: "合同不要求特征值相同，只要求正负个数一致；相似要求更强",
+    similar: "实对称矩阵上，相似 ⇔ 合同" },
+
+  { id: "mc_ln_vs_geo", name: "两个常用展开：ln(1+x) 与 1/(1-x)", module: "高数", chapter: "易混对比", tags: ["数一", "数三", "396"],
+    chunks: ["\\ln(1+x)", "=", "x-\\frac{x^{2}}{2}+\\frac{x^{3}}{3}-\\cdots", "\\quad", "\\frac{1}{1-x}", "=", "1+x+x^{2}+\\cdots"],
+    trap: { i: 2, t: "x+\\frac{x^{2}}{2}+\\frac{x^{3}}{3}+\\cdots" },
+    hook: "ln(1+x) 正负交错；1/(1−x) 全是加号",
+    pitfall: "把 ln 那串写成全加号是最常见的错；ln 的收敛域是 (−1,1]",
+    similar: "\\frac{1}{1+x}=1-x+x^{2}-x^{3}+\\cdots，与 1/(1-x) 只差交替" }
+
+
+  ,
+  /* ================= 泰勒展开补充 ================= */
+  { id: "mc_tan", name: "麦克劳林：tan x", module: "高数", chapter: "泰勒", tags: ["数一", "数三", "396"],
+    chunks: ["\\tan x", "=", "x+\\frac{x^{3}}{3}+\\frac{2x^{5}}{15}", "+", "o(x^{5})"],
+    trap: { i: 2, t: "x+\\frac{x^{3}}{6}+\\frac{2x^{5}}{15}" },
+    hook: "tan x 的三阶项是 x³/3，比 sin x 大一号",
+    pitfall: "把 x³/3 记成 x³/6（那是 sin x − x 的系数）最常错",
+    similar: "\\sin x=x-\\frac{x^{3}}{6}+o(x^{3})，tan 的系数是三倍" },
+
+  { id: "mc_arctan", name: "麦克劳林：arctan x", module: "高数", chapter: "泰勒", tags: ["数一", "数三", "396"],
+    chunks: ["\\arctan x", "=", "x-\\frac{x^{3}}{3}+\\frac{x^{5}}{5}-\\cdots"],
+    trap: { i: 2, t: "x-\\frac{x^{2}}{2}+\\frac{x^{5}}{5}-\\cdots" },
+    hook: "arctan 是交替的奇次项，系数 1/3、1/5 依次来",
+    pitfall: "别写成 x²/2（那是 ln(1+x) 的二阶项），arctan 只有奇次",
+    similar: "\\tan x 的展开与它系数相同、符号全正" },
+
+  { id: "taylor_peano", name: "泰勒公式（佩亚诺余项）", module: "高数", chapter: "泰勒", tags: ["数一", "数二", "数三", "396"],
+    chunks: ["f(x)", "=", "\\sum_{k=0}^{n}\\frac{f^{(k)}(x_{0})}{k!}(x-x_{0})^{k}", "+", "o((x-x_{0})^{n})"],
+    trap: { i: 4, t: "o((x-x_{0})^{n-1})" },
+    hook: "佩亚诺余项只保证 x→x₀ 时的阶，用来算极限最方便",
+    pitfall: "余项的阶要和展开到第 n 项对齐；写成 n−1 阶就是少展一项",
+    similar: "拉格朗日余项 R_{n}(x)=\\frac{f^{(n+1)}(\\xi)}{(n+1)!}(x-x_{0})^{n+1} 能估计误差" }
+
+];
+
+</script>
+<script>
+/* 攻势 v0.3 —— 核心逻辑
+   像刷单词一样刷公式，一条公式拆成五种练法：
+     learn  认脸：看名字想公式，翻面自评（新卡专用，"记忆考察"）
+     choice 选择：给名字，从 4 个式子里挑（干扰项取自同章节/同模块的易混公式）
+     fill   挖空：给定等号左边，把右边拼回来
+     build  拼公式：整条公式打乱顺序拼回去（复习里暂时不出，代码保留）
+     find   找错：公式被改了一处，点出错误
+   复习调度：Leitner 五盒（interval 0/1/3/7/15 天） */
+
+(function () {
+  var KEY = 'gongshi_v1';
+  var EXAMS = ['数一', '数二', '数三', '396'];
+  var INTERVALS = [0, 1, 3, 7, 15];
+
+  var S = load();
+  S.box = S.box || {};
+  S.due = S.due || {};
+  S.exam = S.exam || '数三';
+  S.streak = S.streak || 0;
+  S.lastDay = S.lastDay || '';
+  S.today = S.today || { day: '', n: 0 };
+  S.mark = S.mark || {};          // 最近一次自评：2 会了 / 1 模糊 / 0 不会
+
+  var session = [], idx = 0, cur = null, sessionKind = 'daily';
+
+  /* ---------- 存储与日期 ---------- */
+  function load() {
+    try { var o = JSON.parse(localStorage.getItem(KEY)); return (o && typeof o === 'object') ? o : {}; }
+    catch (e) { return {}; }
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+  function dayKey(d) {
+    d = d || new Date();
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  }
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  /* ---------- 数据筛选 ---------- */
+  function pool() {
+    return FORMULAS.filter(function (f) { return f.tags.indexOf(S.exam) >= 0; });
+  }
+  function studiedPool() {
+    return pool().filter(function (f) {
+      return S.mark[f.id] !== undefined || (S.box[f.id] || 0) > 0;
+    }).sort(function (a, b) { return (S.due[a.id] || 0) - (S.due[b.id] || 0); });
+  }
+  function counts() {
+    var p = pool();
+    var nw = 0, due = 0, done = 0;
+    p.forEach(function (f) {
+      var b = S.box[f.id] || 0;
+      var seen = S.mark[f.id] !== undefined || b > 0;
+      if (!seen) nw++;
+      else due++;          // 评过级就算"待复习"，和「复习挑战」的池子一致
+      if (b >= 3) done++;
+    });
+    return { nw: nw, due: due, done: done, total: p.length };
+  }
+
+  /* ---------- 出题 ---------- */
+  var SEPS = ['=', '~', '\\approx', '\\sim'];
+  function splitAtEq(chunks) {
+    var i = -1;
+    for (var k = 0; k < chunks.length; k++) {
+      if (SEPS.indexOf(chunks[k]) >= 0) { i = k; break; }
+    }
+    if (i <= 0 || i >= chunks.length - 1) return null;
+    return { left: chunks.slice(0, i + 1), right: chunks.slice(i + 1) };
+  }
+
+  // 找错题不能把式子写在标题里，否则一眼就看出来了。
+  // 名字形如「等价无穷小：tan x - x」，只取冒号前那段。
+  function shortName(f) {
+    var i = f.name.search(/[：:]/);
+    if (i <= 0) return f.name;
+    return f.name.slice(0, i);
+  }
+
+  // \quad 这种纯排版块不该出现在"点哪块错了"里，也不该当选项
+  function isSpacer(c) {
+    return /^\\(quad|qquad|,|;|:|!| )$/.test(c) || /^\\[,;:!]?$/.test(c);
+  }
+
+  function pickMode(f, quizOnly) {
+    var n = f.chunks.length, eq = splitAtEq(f.chunks);
+    var w = [];
+    if (!quizOnly) w.push(['learn', 2]);
+    // 只要等号右边有内容块就能出选填（极限题就是「左边已知、右边挖空」）
+    var canBlank = !!eq && eq.right.some(function (c) {
+      return c.length > 1 && /[A-Za-z\\]/.test(c) && !isSpacer(c);
+    });
+    if (canBlank) w.push(['blank', 3]);
+    w.push(['choice', 2]);
+    if (eq && eq.right.length >= 2) w.push(['fill', 3]);
+    // 极限、导数这两章的找错题太容易（改个符号就能看出），先不出
+    if (f.trap && n >= 3 && f.chapter !== '极限' && f.chapter !== '导数') w.push(['find', 2]);
+    var total = 0;
+    w.forEach(function (x) { total += x[1]; });
+    var r = Math.random() * total;
+    for (var i = 0; i < w.length; i++) { r -= w[i][1]; if (r <= 0) return w[i][0]; }
+    return 'learn';
+  }
+
+  function startSession(kind) {
+    sessionKind = kind === 'review' ? 'review' : 'daily';
+    var now = Date.now(), p = pool();
+    var dues = p.filter(function (f) { return (S.box[f.id] || 0) > 0 && (S.due[f.id] || 0) <= now; });
+    var news = p.filter(function (f) { return !S.box[f.id]; });
+    dues = shuffle(dues.slice(0, 15));
+    news = news.slice(0, 8);
+
+    if (kind === 'review') {
+      // 复习挑战：只要在学习里评过级（会了/模糊/不会）就能进来，不等间隔到期
+      var stu = studiedPool();
+      if (!stu.length) { flash('还没有评过级的公式，先学几张新卡吧'); return; }
+      var pick = shuffle(stu.slice(0, 15));
+      session = pick.map(function (f) { return { f: f, mode: pickMode(f, true) }; });
+    } else {
+      // 先"记忆考察"新卡（learn），再做到期卡的题
+      session = news.map(function (f) { return { f: f, mode: 'learn' }; })
+        .concat(dues.map(function (f) { return { f: f, mode: pickMode(f, false) }; }));
+      if (!session.length) { flash('这个考试方向已经刷完了 🎉'); return; }
+    }
+    idx = 0;
+    show('study');
+    renderCard();
+  }
+
+  function flash(msg) {
+    var h = document.getElementById('homeHint');
+    h.textContent = msg;
+    h.classList.add('flash');
+    setTimeout(function () { h.classList.remove('flash'); }, 1600);
+  }
+
+  /* ---------- 渲染 ---------- */
+  function show(id) {
+    ['home', 'study', 'summary', 'done'].forEach(function (s) {
+      document.getElementById(s).classList.toggle('hidden', s !== id);
+    });
+  }
+
+  function formulaBox(f) {
+    var t = texHTML(f.chunks.join(' '));
+    if (f.cond) t += '<span class="cond">' + texHTML(f.cond) + '</span>';
+    return '<div class="formula">' + t + '</div>';
+  }
+  function notes(f) {
+    return '<div class="notes">' +
+      '<p><b>口诀</b>' + richText(f.hook) + '</p>' +
+      '<p><b>易错</b>' + richText(f.pitfall) + '</p>' +
+      '<p><b>辨析</b>' + richText(f.similar) + '</p>' +
+      '</div>';
+  }
+  function gradeBtns() {
+    return '<div class="grade">' +
+      '<button class="g g0" data-act="grade" data-g="0">忘了</button>' +
+      '<button class="g g1" data-act="grade" data-g="1">模糊</button>' +
+      '<button class="g g2" data-act="grade" data-g="2">会了</button>' +
+      '</div>';
+  }
+  function nextBtn() {
+    return '<button class="primary" data-act="next">下一个</button>';
+  }
+  function feedback(f, ok) {
+    var tip = ok ? '对了' : '再记一次';
+    var html = '<div class="fb ' + (ok ? 'ok' : 'no') + '">' + tip + '</div>' +
+      '<div class="correct"><span>正确写法</span>' + formulaBox(f) + '</div>';
+    if (ok) html += notes(f);
+    return html + nextBtn();
+  }
+
+  function learnHTML(f) {
+    var html = '<div class="tagline">' + f.module + ' · ' + f.chapter + '</div>' +
+      '<h1 class="qname">' + f.name + '</h1>';
+    if (!cur.revealed) {
+      html += '<div class="ask">先在脑子里过一遍它的样子，再点开对照</div>' +
+        '<button class="primary" data-act="reveal">显示公式</button>';
+    } else {
+      html += formulaBox(f) + notes(f) + gradeBtns();
+    }
+    return html;
+  }
+
+  function findHTML(f) {
+    var chips = f.chunks.map(function (c, i) {
+      if (i !== f.trap.i && isSpacer(c)) return '<span class="fspace"></span>';
+      var text = (i === f.trap.i) ? f.trap.t : c;
+      var cls = 'chunk';
+      if (cur.result !== null && i === f.trap.i) cls += ' right';
+      if (cur.result !== null && i === cur.picked && !cur.result) cls += ' wrong';
+      return '<span class="' + cls + '" data-act="pick" data-i="' + i + '">' + texHTML(text) + '</span>';
+    }).join('');
+    var html = '<div class="tagline">找错 · ' + f.module + ' · ' + f.chapter + '</div>' +
+      '<h1 class="qname">' + shortName(f) + '</h1>' +
+      '<div class="ask">下面这条公式错了一处，点出错误的那一块</div>' +
+      '<div class="formula chips">' + chips + '</div>';
+    if (cur.result !== null) html += feedback(f, cur.result);
+    return html;
+  }
+
+  function buildHTML(f) {
+    var chosen = cur.chosen;
+    var slot = chosen.map(function (i) {
+      return '<span class="tok in" data-act="untok" data-i="' + i + '">' + texHTML(f.chunks[i]) + '</span>';
+    }).join('');
+    var bank = cur.order.filter(function (i) { return chosen.indexOf(i) < 0; }).map(function (i) {
+      return '<span class="tok" data-act="tok" data-i="' + i + '">' + texHTML(f.chunks[i]) + '</span>';
+    }).join('');
+    var html = '<div class="tagline">拼公式 · ' + f.module + '</div>' +
+      '<h1 class="qname">' + f.name + '</h1>' +
+      '<div class="ask">按顺序点选，把公式拼出来</div>' +
+      '<div class="slot' + (chosen.length ? '' : ' empty') + '">' +
+      (slot || '点下面的积木块开始拼') + '</div>' +
+      '<div class="bank">' + bank + '</div>';
+    if (cur.result === null) {
+      html += '<button class="primary" data-act="submit"' +
+        (chosen.length === f.chunks.length ? '' : ' disabled') + '>提交</button>';
+    } else {
+      html += feedback(f, cur.result);
+    }
+    return html;
+  }
+
+  /* 干扰项：优先同一章（最容易混），再同模块，最后全库 */
+  function decoys(f, k) {
+    var p = pool();
+    function pick(filter) { return shuffle(p.filter(filter)); }
+    var same = pick(function (x) { return x.id !== f.id && x.chapter === f.chapter; });
+    var mod = pick(function (x) { return x.id !== f.id && x.module === f.module && x.chapter !== f.chapter; });
+    var rest = pick(function (x) { return x.id !== f.id && x.module !== f.module; });
+    var cand = same.concat(mod, rest), out = [], seen = {};
+    seen[f.chunks.join(' ')] = 1;
+    for (var i = 0; i < cand.length && out.length < k; i++) {
+      var key = cand[i].chunks.join(' ');
+      if (seen[key]) continue;
+      seen[key] = 1; out.push(cand[i]);
+    }
+    return out;
+  }
+
+  function choiceHTML(f) {
+    if (!cur.opts) {
+      var eq = splitAtEq(f.chunks);
+      var right = eq ? eq.right.join(' ') : f.chunks.join(' ');
+      var seen = {}; seen[right] = 1;
+      var items = [{ t: right, ok: true }];
+      var near = shuffle(pool().filter(function (x) { return x.id !== f.id && x.chapter === f.chapter; }));
+      var far = shuffle(pool().filter(function (x) { return x.id !== f.id && x.chapter !== f.chapter; }));
+      near.concat(far).forEach(function (x) {
+        if (items.length >= 4) return;
+        var e2 = splitAtEq(x.chunks);
+        var r = e2 ? e2.right.join(' ') : x.chunks.join(' ');
+        if (seen[r]) return;
+        seen[r] = 1; items.push({ t: r, ok: false });
+      });
+      cur.opts = shuffle(items);
+      cur.stem = eq ? eq.left.join(' ') : '';
+    }
+    var html = '<div class="tagline">选择题 · ' + f.module + ' · ' + f.chapter + '</div>' +
+      '<h1 class="qname">' + shortName(f) + '</h1>' +
+      '<div class="ask">它的结果是哪一个？</div>' +
+      '<div class="formula">' + texHTML(cur.stem) +
+        (cur.stem ? ' <span class="qmark">?</span>' : '') + '</div>' +
+      '<div class="opts">';
+    cur.opts.forEach(function (o, i) {
+      var cls = 'opt';
+      if (cur.result !== null) {
+        if (o.ok) cls += ' right';
+        else if (i === cur.picked) cls += ' wrong';
+      }
+      html += '<button class="' + cls + '" data-act="choose" data-i="' + i + '">' +
+        texHTML(o.t) + '</button>';
+    });
+    html += '</div>';
+    if (cur.result !== null) html += feedback(f, cur.result);
+    return html;
+  }
+
+  function fillHTML(f) {
+    var eq = splitAtEq(f.chunks), right = eq.right;
+    if (!cur.rightOrder) cur.rightOrder = shuffle(right.map(function (_, i) { return i; }));
+    var chosen = cur.chosen;
+    var slot = chosen.map(function (i) {
+      return '<span class="tok in" data-act="untok" data-i="' + i + '">' + texHTML(right[i]) + '</span>';
+    }).join('');
+    var bank = cur.rightOrder.filter(function (i) { return chosen.indexOf(i) < 0; })
+      .map(function (i) {
+        return '<span class="tok" data-act="tok" data-i="' + i + '">' + texHTML(right[i]) + '</span>';
+      }).join('');
+    var html = '<div class="tagline">挖空拼公式 · ' + f.module + ' · ' + f.chapter + '</div>' +
+      '<h1 class="qname">' + f.name + '</h1>' +
+      '<div class="ask">左边已经给定了，把右边补回来</div>' +
+      '<div class="formula">' + texHTML(eq.left.join(' ')) + '<span class="blank">?</span></div>' +
+      '<div class="slot' + (chosen.length ? '' : ' empty') + '">' +
+      (slot || '点下面的积木块补上等式右边') + '</div>' +
+      '<div class="bank">' + bank + '</div>';
+    if (cur.result === null) {
+      html += '<button class="primary" data-act="submit"' +
+        (chosen.length === right.length ? '' : ' disabled') + '>提交</button>';
+    } else {
+      html += feedback(f, cur.result);
+    }
+    return html;
+  }
+
+  /* 选填：把公式里一块挖掉，从 4 个候选块里挑（任何公式都能出，不依赖等号） */
+  function blankHTML(f) {
+    if (!cur.opts) {
+      // 等号前面一律当已知（极限题尤其明显），只在右边挖
+      var eq = splitAtEq(f.chunks);
+      var from = eq ? f.chunks.length - eq.right.length : 0;
+      var cand = [];
+      f.chunks.forEach(function (c, i) {
+        if (i < from || c.length < 2 || !/[A-Za-z\\]/.test(c) || isSpacer(c)) return;
+        cand.push(i);
+      });
+      cur.blankAt = cand.length ? cand[Math.floor(Math.random() * cand.length)] : 0;
+      var texts = [], seen = {};
+      seen[f.chunks[cur.blankAt]] = 1;
+      var near = shuffle(pool().filter(function (x) { return x.id !== f.id && x.chapter === f.chapter; }));
+      var far = shuffle(pool().filter(function (x) { return x.id !== f.id && x.chapter !== f.chapter; }));
+      near.concat(far).forEach(function (x) {
+        x.chunks.forEach(function (c) {
+          if (texts.length >= 3 || seen[c]) return;
+          if (c.length < 2 || !/[A-Za-z\\]/.test(c) || isSpacer(c)) return;  // 不拿 = ~ \quad 这种块当干扰项
+          seen[c] = 1; texts.push(c);
+        });
+      });
+      cur.opts = shuffle([{ t: f.chunks[cur.blankAt], ok: true }]
+        .concat(texts.map(function (t) { return { t: t, ok: false }; })));
+    }
+    var body = f.chunks.map(function (c, i) {
+      return i === cur.blankAt ? '<span class="blank">?</span>' : texHTML(c);
+    }).join(' ');
+    var html = '<div class="tagline">选填 · ' + f.module + ' · ' + f.chapter + '</div>' +
+      '<h1 class="qname">' + f.name + '</h1>' +
+      '<div class="ask">空格里该填哪一块？</div>' +
+      '<div class="formula">' + body + '</div><div class="opts">';
+    cur.opts.forEach(function (o, i) {
+      var cls = 'opt';
+      if (cur.result !== null) {
+        if (o.ok) cls += ' right';
+        else if (i === cur.picked) cls += ' wrong';
+      }
+      html += '<button class="' + cls + '" data-act="choose" data-i="' + i + '">' + texHTML(o.t) + '</button>';
+    });
+    html += '</div>';
+    if (cur.result !== null) html += feedback(f, cur.result);
+    return html;
+  }
+
+  function renderCard() {
+    if (idx >= session.length) { finish(); return; }
+    var it = session[idx];
+    cur = {
+      it: it, revealed: false, chosen: [], result: null, picked: -1,
+      order: shuffle(it.f.chunks.map(function (_, i) { return i; })),
+      rightOrder: null, opts: null, blankAt: null
+    };
+    document.getElementById('counter').textContent = (idx + 1) + '/' + session.length;
+    document.getElementById('barFill').style.width = (idx / session.length * 100) + '%';
+    drawCard();
+    window.scrollTo(0, 0);
+  }
+  function drawCard() {
+    var f = cur.it.f;
+    var el = document.getElementById('card');
+    if (cur.it.mode === 'learn') el.innerHTML = learnHTML(f);
+    else if (cur.it.mode === 'find') el.innerHTML = findHTML(f);
+    else if (cur.it.mode === 'choice') el.innerHTML = choiceHTML(f);
+    else if (cur.it.mode === 'fill') el.innerHTML = fillHTML(f);
+    else if (cur.it.mode === 'blank') el.innerHTML = blankHTML(f);
+    else el.innerHTML = buildHTML(f);
+  }
+
+  /* ---------- 判分与调度 ---------- */
+  function applyGrade(f, g) {
+    var b = S.box[f.id] || 0, nb;
+    if (g === 2) nb = Math.min(b + 1, 4);
+    else if (g === 1) nb = Math.max(b, 1);
+    else nb = 0;
+    S.box[f.id] = nb;
+    S.mark[f.id] = g;
+    S.due[f.id] = Date.now() + INTERVALS[nb] * 86400000;
+    S.history = S.history || {};
+    S.history[f.id] = (S.history[f.id] || 0) + 1;
+    save();
+  }
+
+  /* ---------- 事件 ---------- */
+  function onClick(e) {
+    var t = e.target.closest ? e.target.closest('[data-act]') : null;
+    if (!t) return;
+    var act = t.getAttribute('data-act');
+    var f = cur && cur.it.f;
+
+    if (act === 'reveal') { cur.revealed = true; drawCard(); return; }
+
+    if (act === 'grade') {
+      applyGrade(f, parseInt(t.getAttribute('data-g'), 10));
+      bumpToday(); idx++; renderCard(); return;
+    }
+
+    if (act === 'choose') {
+      if (cur.result !== null) return;
+      var ci = parseInt(t.getAttribute('data-i'), 10);
+      cur.picked = ci;
+      cur.result = !!cur.opts[ci].ok;
+      applyGrade(f, cur.result ? 2 : 0);
+      bumpToday();
+      drawCard(); return;
+    }
+
+    if (act === 'pick') {
+      if (cur.result !== null) return;
+      var i = parseInt(t.getAttribute('data-i'), 10);
+      cur.picked = i;
+      cur.result = (i === f.trap.i);
+      applyGrade(f, cur.result ? 2 : 0);
+      bumpToday();
+      drawCard(); return;
+    }
+
+    if (act === 'tok') {
+      cur.chosen.push(parseInt(t.getAttribute('data-i'), 10));
+      drawCard(); return;
+    }
+    if (act === 'untok') {
+      var k = cur.chosen.indexOf(parseInt(t.getAttribute('data-i'), 10));
+      if (k >= 0) cur.chosen.splice(k, 1);
+      drawCard(); return;
+    }
+    if (act === 'submit') {
+      if (cur.result !== null) return;
+      var target = cur.it.mode === 'fill' ? splitAtEq(f.chunks).right.length : f.chunks.length;
+      var ok = cur.chosen.length === target &&
+        cur.chosen.every(function (v, n) { return v === n; });
+      cur.result = ok;
+      applyGrade(f, ok ? 2 : 0);
+      bumpToday();
+      drawCard(); return;
+    }
+    if (act === 'next') { idx++; renderCard(); return; }
+  }
+
+  function bumpToday() {
+    var d = dayKey();
+    if (S.today.day !== d) { S.today = { day: d, n: 0 }; }
+    S.today.n++;
+    save();
+  }
+
+  /* ---------- 首页 / 完成页 ---------- */
+  function renderHome() {
+    var c = counts();
+    document.getElementById('stNew').textContent = c.nw;
+    document.getElementById('stDue').textContent = c.due;
+    document.getElementById('stDone').textContent = c.done;
+    document.getElementById('homeHint').textContent =
+      '题库共 ' + c.total + ' 条 · 今日已刷 ' + (S.today.day === dayKey() ? S.today.n : 0) +
+      ' 题 · 连续 ' + S.streak + ' 天';
+    var row = document.getElementById('examRow');
+    row.innerHTML = EXAMS.map(function (x) {
+      return '<button class="chip' + (x === S.exam ? ' on' : '') + '" data-exam="' + x + '">' + x + '</button>';
+    }).join('');
+  }
+
+  var sumGroup = 2;
+  function renderSummary() {
+    var p = pool(), g = { '0': [], '1': [], '2': [] }, un = 0;
+    p.forEach(function (f) {
+      if (S.mark[f.id] === undefined && !(S.box[f.id] || 0)) { un++; return; }
+      var m = S.mark[f.id] === undefined ? 2 : S.mark[f.id];
+      g[m].push(f);
+    });
+    document.getElementById('sumAsk').textContent =
+      '共 ' + p.length + ' 条，其中未学 ' + un + ' 条。点上面三档看对应的公式。';
+    document.getElementById('sumSegs').innerHTML = [
+      ['2', '会了', 'g2'], ['1', '模糊', 'g1'], ['0', '不会', 'g0']
+    ].map(function (x) {
+      return '<button class="seg ' + x[2] + (String(sumGroup) === x[0] ? ' on' : '') +
+        '" data-g="' + x[0] + '">' + x[1] + ' <b>' + g[x[0]].length + '</b></button>';
+    }).join('');
+
+    var list = g[sumGroup];
+    if (!list.length) {
+      document.getElementById('sumList').innerHTML =
+        '<div class="empty-note">这一档还没有公式。</div>';
+      return;
+    }
+    document.getElementById('sumList').innerHTML = list.map(function (f) {
+      return '<div class="sumcard">' +
+        '<div class="sumhead">' + f.module + ' · ' + f.chapter + '</div>' +
+        '<h3>' + f.name + '</h3>' + formulaBox(f) + notes(f) + '</div>';
+    }).join('');
+  }
+
+  function finish() {
+    var d = dayKey();
+    if (S.lastDay !== d) {
+      var y = new Date(); y.setDate(y.getDate() - 1);
+      S.streak = (S.lastDay === dayKey(y)) ? S.streak + 1 : 1;
+      S.lastDay = d;
+      save();
+    }
+    var c = counts();
+    document.getElementById('doneBody').innerHTML =
+      '<div class="big">' + session.length + '</div>' +
+      '<p>' + (sessionKind === 'review' ? '道题刷完了' : '个公式过了一遍') + '</p>' +
+      '<p class="sub">待复习 ' + c.due + ' · 已掌握 ' + c.done + ' · 连续 ' + S.streak + ' 天</p>';
+    show('done');
+  }
+
+  /* ---------- 启动 ---------- */
+  function init() {
+    renderHome();
+    document.getElementById('examRow').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-exam]');
+      if (!b) return;
+      S.exam = b.getAttribute('data-exam');
+      save(); renderHome();
+    });
+    document.getElementById('startBtn').addEventListener('click', function () { startSession('daily'); });
+    document.getElementById('reviewBtn').addEventListener('click', function () { startSession('review'); });
+    document.getElementById('sumBtn').addEventListener('click', function () { renderSummary(); show('summary'); });
+    document.getElementById('sumBack').addEventListener('click', function () { show('home'); renderHome(); });
+    document.getElementById('sumSegs').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-g]');
+      if (!b) return;
+      sumGroup = Number(b.getAttribute('data-g'));
+      renderSummary();
+    });
+    document.getElementById('quitBtn').addEventListener('click', function () { show('home'); renderHome(); });
+    document.getElementById('againBtn').addEventListener('click', function () { show('home'); renderHome(); });
+    document.getElementById('card').addEventListener('click', onClick);
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+})();
+
+</script>
 </body>
 </html>
